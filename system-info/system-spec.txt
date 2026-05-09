@@ -180,11 +180,18 @@ Ubuntu clang version 21.1.8 (++20251221032922+2078da43e25a-1~exp1~20251221153059
 Target: x86_64-pc-linux-gnu
 
 === nvcc ===
+WARNING: /usr/bin/nvcc is a 12.0 shim. The real toolkit is 13.2 at /usr/local/cuda -> /usr/local/cuda-13.2/.
+Use /usr/local/cuda/bin/nvcc or `export PATH=/usr/local/cuda/bin:$PATH`.
+
+$ /usr/local/cuda/bin/nvcc --version
 nvcc: NVIDIA (R) Cuda compiler driver
-Copyright (c) 2005-2023 NVIDIA Corporation
-Built on Fri_Jan__6_16:45:21_PST_2023
-Cuda compilation tools, release 12.0, V12.0.140
-Build cuda_12.0.r12.0/compiler.32267302_0
+Copyright (c) 2005-2026 NVIDIA Corporation
+Built on Thu_Mar_19_11:12:51_PM_PDT_2026
+Cuda compilation tools, release 13.2, V13.2.78
+Build cuda_13.2.r13.2/compiler.37668154_0
+
+CUDA SDK 13.2.20260407 (per /usr/local/cuda/version.json)
+libcublas: 13.4.0.1, libnvvm: 13.2.78, libnvjitlink: 13.2.78
 
 === libcuda + libnvvm ===
 lrwxrwxrwx 1 root root       12 Apr 29 23:55 /usr/local/cuda/nvvm/lib64/libnvvm.so -> libnvvm.so.4
