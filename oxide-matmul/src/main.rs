@@ -155,7 +155,7 @@ fn run_kernel_sweep(
     a_dev: &DeviceBuffer<f32>,
     b_dev: &DeviceBuffer<f32>,
     mut c_dev: &mut DeviceBuffer<f32>,
-    use_unchecked: bool,
+    use_unchecked: u8, // 0=safe, 1=unchecked, 2=fmuladd
     csv: &mut BufWriter<File>,
 ) -> Vec<(f64, f64, f64)> {
     let dim_arg = n as u32;
@@ -170,19 +170,20 @@ fn run_kernel_sweep(
     for _ in 0..WARMUP {
         let s = stream.clone();
         let m = module.clone();
-        if use_unchecked {
-            cuda_launch! {
+        match use_unchecked {
+            1 => cuda_launch! {
                 kernel: matmul_unchecked, stream: s, module: m, config: cfg,
                 args: [slice(a_dev), slice(b_dev), slice_mut(c_dev), dim_arg]
-            }
-            .unwrap();
-        } else {
-            cuda_launch! {
+            }.unwrap(),
+            2 => cuda_launch! {
+                kernel: matmul_fmuladd, stream: s, module: m, config: cfg,
+                args: [slice(a_dev), slice(b_dev), slice_mut(c_dev), dim_arg]
+            }.unwrap(),
+            _ => cuda_launch! {
                 kernel: matmul, stream: s, module: m, config: cfg,
                 args: [slice(a_dev), slice(b_dev), slice_mut(c_dev), dim_arg]
-            }
-            .unwrap();
-        }
+            }.unwrap(),
+        };
         stream.synchronize().unwrap();
     }
 
@@ -201,19 +202,20 @@ fn run_kernel_sweep(
 
         let t0 = Instant::now();
         start.record(stream).expect("record start");
-        if use_unchecked {
-            cuda_launch! {
+        match use_unchecked {
+            1 => cuda_launch! {
                 kernel: matmul_unchecked, stream: s, module: m, config: cfg,
                 args: [slice(a_dev), slice(b_dev), slice_mut(c_dev), dim_arg]
-            }
-            .unwrap();
-        } else {
-            cuda_launch! {
+            }.unwrap(),
+            2 => cuda_launch! {
+                kernel: matmul_fmuladd, stream: s, module: m, config: cfg,
+                args: [slice(a_dev), slice(b_dev), slice_mut(c_dev), dim_arg]
+            }.unwrap(),
+            _ => cuda_launch! {
                 kernel: matmul, stream: s, module: m, config: cfg,
                 args: [slice(a_dev), slice(b_dev), slice_mut(c_dev), dim_arg]
-            }
-            .unwrap();
-        }
+            }.unwrap(),
+        };
         stop.record(stream).expect("record stop");
         stream.synchronize().unwrap();
         let cpu_wall_ms = t0.elapsed().as_secs_f64() * 1000.0;
@@ -277,7 +279,7 @@ fn main() {
         upload_f32(&stream, &a_dev, &a_host);
         upload_f32(&stream, &b_dev, &b_host);
 
-        for &(kname, use_unchk) in &[("safe", false), ("unchecked", true)] {
+        for &(kname, use_unchk) in &[("safe", 0u8), ("unchecked", 1u8), ("fmuladd", 2u8)] {
             let iters = run_kernel_sweep(
                 kname,
                 n,

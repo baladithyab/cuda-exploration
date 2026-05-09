@@ -61,6 +61,15 @@ cargo-oxide is the build driver that wraps `cargo` for cuda-oxide projects. Inst
 cargo +nightly install --git https://github.com/NVlabs/cuda-oxide.git cargo-oxide
 ```
 
+**CRITICAL: Set `CUDA_HOME` before any `cargo oxide` invocation** to avoid a libNVVM shadow bug:
+
+```bash
+export CUDA_HOME=/usr/local/cuda
+export LIBNVVM_PATH=/usr/local/cuda/nvvm/lib64/libnvvm.so
+```
+
+Without this, cuda-oxide's `libnvvm-sys` may load `/usr/lib/x86_64-linux-gnu/libnvvm.so.4` (libNVVM 7.0.1 from an older Ubuntu CUDA package, capped at compute_90 / Hopper) instead of the modern libNVVM 22.0.0 from CUDA 13.2. Symptom: builds fail with `-arch=compute_120 is an unsupported option`, OR build silently produces poor PTX for slice indexing. See [`docs/experiments/libnvvm-corrigendum.md`](docs/experiments/libnvvm-corrigendum.md). This is the difference between `oxide/safe` running at 6.94 TFLOPS (correct) vs 2.80 TFLOPS (broken libNVVM) at N=1024.
+
 From inside any cargo-oxide project (e.g. `oxide-vecadd/`), verify the toolchain is healthy:
 
 ```bash
@@ -69,6 +78,13 @@ cargo oxide doctor
 ```
 
 You should see green checkmarks for: nightly toolchain detected, `rust-src` present, `rustc-dev` present, `llvm-tools-preview` present, `llc-21` found, NVPTX target registered, CUDA driver reachable.
+
+**Note:** `doctor` reports "libNVVM 2.0" — that's the IR version, not the toolkit version. To confirm you're getting the modern libNVVM 22.0.0, run:
+
+```bash
+strings /usr/local/cuda/nvvm/lib64/libnvvm.so | grep "compute_120"
+# Should print: -arch=compute_120, -arch=compute_120a, -arch=compute_120f
+```
 
 If any check is red, fix it before moving on — the build will fail with cryptic linker errors otherwise.
 

@@ -12,30 +12,34 @@ Full scaling sweep — 7 `(impl, kernel)` configurations × N ∈ {1024, 2048, 4
 |---|---:|---:|---:|
 | cublas-matmul/sgemm | **33.94** | **62.98** | **59.83** |
 | cuda-tiled/matmul_tiled | 24.47 | 33.44 | 28.07 |
-| oxide-tiled/unchecked | 9.02 | 6.60 | 7.95 |
-| oxide-tiled/safe | 8.83 | 5.56 | 7.69 |
+| oxide-tiled/unchecked | 9.09 | 7.22 | 7.91 |
+| oxide-tiled/safe | 8.89 | 7.99 | 7.67 |
+| oxide/fmuladd | 6.92 | 5.58 | 5.70 |
 | cuda-matmul/matmul | 6.88 | 6.33 | 6.23 |
-| oxide/unchecked | 6.51 | 4.92 | 4.96 |
-| oxide/safe | 2.80 | 2.40 | 2.01 |
+| oxide/unchecked | 6.95 | 5.81 | 5.13 |
+| oxide/safe | 6.94 | 6.37 | 4.84 |
 
 **Key ratios (median):**
 
-- **cuda-oxide unchecked vs nvcc naive:** 0.95× / 0.78× / 0.80× across N — closest at N=1024.
-- **Rust safety tax (unchecked → safe):** 2.32× / 2.05× / 2.47× slowdown.
-- **Tiling speedup (tiled / naive):** nvcc gets 3.6×/5.3×/4.5×; cuda-oxide gets 1.4×/1.3×/1.6× — compiler gap widens with tiling (missing FMA + K-loop unroll).
+- **cuda-oxide naive vs nvcc CUDA C++:** at N=1024, all four naive kernels (oxide safe/unchecked/fmuladd, nvcc) land within 1% of each other (6.88-6.95 TFLOPS). The compiler is 99% of the way there for naive kernels.
+- **Rust safety tax:** ~0% at N=1024, varying to a small effect at larger N driven by thermal noise. The 2.5× initially reported in v0 was a libNVVM environment artifact (see [`docs/experiments/libnvvm-corrigendum.md`](docs/experiments/libnvvm-corrigendum.md)).
+- **Tiling speedup (tiled / naive):** nvcc gets 3.6×/5.3×/4.5×; cuda-oxide gets 1.3×/1.2×/1.6× — compiler gap widens with tiling (missing default-FMA contraction + K-loop unroll).
 - **wgpu/WGSL on WSL2:** falls back to llvmpipe CPU, ~1000× slower; boundary is WSL2 Vulkan passthrough, not wgpu.
 
-**→ See [SUMMARY.md](SUMMARY.md) for the full writeup**, or [`results/scaling-summary.md`](results/scaling-summary.md) for per-size best/median/p95 tables. PTX-level deltas in [`analysis/ptx-stats.txt`](analysis/ptx-stats.txt) and the per-folder `ANALYSIS.md` files.
+**→ See [SUMMARY.md](SUMMARY.md) for the full writeup**, or [`results/scaling-summary.md`](results/scaling-summary.md) for per-size best/median/p95 tables. The libNVVM correction is in [`docs/experiments/libnvvm-corrigendum.md`](docs/experiments/libnvvm-corrigendum.md). PTX-level deltas in per-folder `ANALYSIS.md` files.
 
 ## Three findings
 
-### 1. cuda-oxide hits 93% of nvcc when you use `unsafe` raw pointers
-On a raw-pointer inner loop (`*a_base.add(r*dim+k)`), cuda-oxide lands at **0.93×** the throughput of nvcc's CUDA C++ — 5.94 vs 6.39 TFLOPS. The remaining ~10% gap is explained by PTX instruction selection: cuda-oxide emits separate `mul.rn` + `add.rn` pairs where nvcc emits 5 fused `fma.rn` instructions, and nvcc uses `ld.global.nc` (read-only cache, `__restrict__` / `__ldg`) on 10 loads where cuda-oxide uses plain `ld.global`. See [`oxide-matmul/ANALYSIS.md`](oxide-matmul/ANALYSIS.md) for the side-by-side PTX.
+### 1. cuda-oxide hits 99% of nvcc on naive kernels (when libNVVM is correctly configured)
+At N=1024 all four naive kernels — `oxide/safe` 6.94, `oxide/unchecked` 6.95, `oxide/fmuladd` 6.92, `cuda-matmul/matmul` 6.88 — land in a 1% band. The compiler quality story is much better than v0 suggested. The previous 2.5× "safety tax" was driven entirely by an outdated `libNVVM 7.0.1` shadowing the modern `libNVVM 22.0.0` from CUDA 13.2. See [`docs/experiments/libnvvm-corrigendum.md`](docs/experiments/libnvvm-corrigendum.md). With `CUDA_HOME=/usr/local/cuda` set, slice bounds-check codegen is essentially free.
 
-### 2. The 'safety tax' is a 2.46× slowdown from per-iter slice bounds checks
-The only difference between the safe and unchecked kernels is the inner-loop read: `a[r*dim+k]` vs `*a_base.add(r*dim+k)`. That one change moves the kernel from 23.15 ms to 56.86 ms — a **2.46× slowdown**. In PTX this materialises as a `setp.ge.u64 … @%p bra` predicate pair inside the hot loop (8 `setp` in safe vs what would be ~0 if bounds were elided). Today, reaching nvcc-competitive throughput in cuda-oxide requires either `unsafe` raw pointers or compiler-side elision of bounds checks that LLVM's NVPTX path does not yet perform. Detailed breakdown: [`analysis/ptx-stats.txt`](analysis/ptx-stats.txt).
+### 2. The Rust safety tax was a libNVVM artifact, not a real cost
+v0 reported a 2.5× slowdown for safe slice-indexed kernels vs unchecked. After diagnosing the [libNVVM shadow bug](docs/experiments/libnvvm-corrigendum.md) (the system `/usr/lib/x86_64-linux-gnu/libnvvm.so.4` was an outdated CUDA 12.0-era binary capping at compute_90), and forcing `CUDA_HOME=/usr/local/cuda` so the build picks up libNVVM 22.0.0 from CUDA 13.2, the safe/unchecked ratio drops to 1.00× at N=1024. The v0 tax was a misconfigured-environment artifact. Modern libNVVM optimizes Rust slice bounds checks to near-free.
 
-### 3. wgpu cannot reach the NVIDIA GPU on WSL2, only llvmpipe (CPU)
+### 3. The compiler gap reopens with tiling
+Even with libNVVM fixed, cuda-oxide's tiled kernel (16×16 SharedArray) gets only 1.3-1.6× speedup from tiling vs nvcc-tiled's 4.5-5.3×. PTX inspection confirms the cause: zero `fma.rn.f32` instructions in oxide-tiled vs 256 in nvcc-tiled. Cuda-oxide's `FastmathFlagsAttr::default()` (= empty) blocks fast-math contraction in the default codegen path. Working escape hatch today: `core::intrinsics::fmuladdf32` lowers to libdevice's `__nv_fmaf` which itself contains `fma.rn.f32`, resolved by nvJitLink at module load. We've drafted an [upstream issue](docs/upstream-issue-fma.md). PTX evidence in [`oxide-matmul-tiled/ANALYSIS.md`](oxide-matmul-tiled/ANALYSIS.md).
+
+### 4. wgpu cannot reach the NVIDIA GPU on WSL2, only llvmpipe (CPU)
 The WSL2 VM exposes `/dev/dxg` (DirectX to CUDA passthrough) but no native Vulkan ICD that wgpu's Vulkan backend will accept as a discrete GPU adapter. wgpu falls back to **llvmpipe**, Mesa's software rasteriser, which runs the compute shader on the AMD Ryzen 7 7700X — ~25 seconds per iteration vs ~23 ms on the real GPU. This is not a wgpu performance issue; it is a WSL2 Vulkan-passthrough issue. See [`wgpu-matmul/ANALYSIS.md`](wgpu-matmul/ANALYSIS.md).
 
 ## Repo layout
@@ -57,10 +61,12 @@ cat SETUP.md
 
 Each of the four benchmarks lives in its own folder with its own run command:
 
-- `cd oxide-vecadd && cargo oxide run`
-- `cd oxide-matmul && cargo oxide run`
-- `cd cuda-matmul && nvcc -O3 -arch=sm_89 matmul.cu -o matmul && ./matmul`
+- `cd oxide-vecadd && cargo oxide run oxide-vecadd`
+- `cd oxide-matmul && cargo oxide run oxide-matmul`
+- `cd cuda-matmul && /usr/local/cuda/bin/nvcc -ccbin clang-14 -O3 -arch=sm_120 -lstdc++ matmul.cu -o matmul && ./matmul`
 - `cd wgpu-matmul && cargo run --release`
+
+**REMEMBER:** before any `cargo oxide` command, set `CUDA_HOME=/usr/local/cuda` so cuda-oxide loads the correct libNVVM. See [SETUP.md](SETUP.md) Step 4 for details.
 
 Full toolchain installation (LLVM 21, Rust nightly, CUDA 12.x, cargo-oxide) is in [SETUP.md](SETUP.md).
 
