@@ -5,7 +5,11 @@ Vision: ship a comprehensive, third-party-citeable evaluation of NVlabs/cuda-oxi
 ## Status
 
 - ✅ v0 shipped (initial commit `5065f3e`): naive 4096×4096 f32 matmul, three backends, per-folder ANALYSIS.md.
-- Open question after v0: is the perf delta consistent across problem sizes? what's the SoL the naive comparison hides? can we close the FMA gap with a flag?
+- ✅ Wave 1-3 shipped: cudaEvent timing, scaling sweep, cuBLAS + tiled, FMA escape hatch, libNVVM corrigendum.
+- ✅ Wave 4 shipped: reduction (W4A), bandwidth bench (W4B), libNVVM causal isolation (W4C — inconclusive).
+- ✅ Wave 5 shipped: SASS-level analysis identifying `LDG.E.CONSTANT` vs `LDG.E` as the residual-gap root cause.
+- ✅ Wave 6 shipped: ran cuda-oxide's `gemm_sol`, `tma_copy`, `tcgen05_matmul` examples — characterizing consumer (sm_120) vs datacenter (sm_100) Blackwell support.
+- Open question: how does the LDG.E.CONSTANT delta translate to actual perf delta on a tiled kernel? Wave 7 candidate.
 
 ## Items
 
@@ -51,8 +55,17 @@ Vision: ship a comprehensive, third-party-citeable evaluation of NVlabs/cuda-oxi
 ### P2 — lower priority / nice-to-have
 
 - [ ] **N1: Multiple block sizes.** 8×8, 16×16, 32×8 etc. for the naive matmul. Occupancy effects.
-- [ ] **N2: Reduction kernel.** Different access pattern than matmul; tests warp-reduce primitives.
+- [x] **N2: Reduction kernel.** Different access pattern than matmul; tests warp-reduce primitives. Done in Wave 4 W4A: cuda-oxide hits 96% of nvcc on 1-GB sum-reduction (1451 vs 1517 GB/s).
 - [ ] **N3: GitHub Actions CI.** Hard without a GPU runner. Document as not-applicable until self-hosted runner available, or use a lightweight "build-only" CI that catches Rust compile errors.
+
+### P3 — opened by Wave 4-6
+
+- [ ] **N4: Memory-bandwidth bench at varying N.** Done in Wave 4 W4B: cuda-oxide and nvcc within 0.1% at N=64M (~90% of HBM peak).
+- [ ] **N5: SASS-level disassembly of remaining gap.** Done in Wave 5: `LDG.E.CONSTANT` vs `LDG.E` is the residual-gap root cause; both compilers unroll 8x.
+- [ ] **N6: Drop-in cuda-oxide `gemm_sol` / `tcgen05_matmul`.** Done in Wave 6: PTX builds, runtime fails on consumer sm_120 Blackwell — datacenter-only (sm_100/sm_100a). TMA works on sm_120.
+- [ ] **U2: Upstream issue for `LDG.E.CONSTANT` / read-only cache hint.** Wave 5 SASS evidence supports drafting a second upstream issue alongside the FMA one. Suggested wording: "rustc-codegen-cuda doesn't emit `LDG.E.CONSTANT` for `&[T]` reads where the slice is shared and immutable; equivalent CUDA C++ with `const __restrict__` does." Patch space: NVPTX lowering of slice-deref to add `nontemporal!`/`invariant.load` hints, or expose a `#[restrict]` attribute on slice params.
+- [ ] **W2: Wave 7 candidate — quantify LDG.E.CONSTANT impact in a tiled kernel.** Patch oxide-matmul-tiled to use raw pointers + manual cache-hint inline asm via `core::arch::asm!`, see if the tiled gap closes.
+- [ ] **W3: Wave 8 candidate — try cuda-oxide on a Hopper SXM5 (H100) cloud instance** to run `gemm_sol` end-to-end and compare to upstream's claimed 868 TFLOPS on B200.
 
 ## Out of scope (for now)
 

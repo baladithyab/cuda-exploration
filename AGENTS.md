@@ -115,3 +115,44 @@ patterns specific to this codebase; general agent guidance lives in skills.
   The aggregator must be the single source of truth — and headline tables
   must be regenerated from that source after any rerun. We had ~3% drift between
   README claims and CSV medians until Phase 8 caught it.
+
+## Wave 4-6 lessons
+
+- **Algorithm class matters more than language.** cuda-oxide hits 96-100% of
+  nvcc on memory-bound kernels (reduction, vec-add). The matmul gap doesn't
+  generalize. Test multiple algorithm classes before generalizing about
+  "compiler quality" — a single benchmark can mislead in either direction.
+
+- **PTX is not the bottom of the stack.** Wave 3 PTX analysis missed the
+  `LDG.E.CONSTANT` vs `LDG.E` distinction because that scheduling lives at
+  the SASS level (post-ptxas). For root-cause work, always disassemble the
+  cubin with `cuobjdump --dump-sass`, not just the .ptx. Hypotheses that
+  look good at PTX level can dissolve at SASS level — and vice versa.
+
+- **Subagent file ownership scales beyond Wave-1-style 3-way splits.** Wave 6
+  had three concurrent subagents touching three new folders + one shared
+  edit each; one subagent's commit absorbed another's untracked files but
+  no actual conflict because file ownership was disjoint. The overlap-via-
+  untracked-files is a trap to watch for: instruct subagents to `git add`
+  only their owned paths, not `git add .`.
+
+- **Build-but-fail-at-runtime is informative.** `gemm_sol` and `tcgen05_matmul`
+  both produced clean cubins that the device couldn't load. The codegen
+  pipeline is fine; the hardware lacks the instruction class. This is a
+  characterization of the user-facing constraints, not a bug.
+
+- **Hardware-feature gaps are not compiler-quality gaps.** Don't conflate
+  "cuda-oxide can't run gemm_sol on RTX 5090" (a Blackwell SM-class issue)
+  with "cuda-oxide produces worse code than nvcc" (which is the matmul
+  finding). The same constraint applies to writing the same kernel in
+  CUDA C++ on the same hardware.
+
+- **Causal isolation is sometimes structurally impossible.** The W4C libNVVM
+  experiment couldn't run because the modern libNVVM rejects the IR for the
+  old arch. Don't burn cycles re-running it; document the structural
+  coupling and move on. The Phase 8 hedge stands.
+
+- **Read existing examples before writing new ones.** cuda-oxide ships
+  `warp_reduce`, `tiled_gemm`, `gemm_sol`, `tma_copy` etc. in the upstream
+  source tree. Importing them as-is for smoke testing is faster and more
+  accurate than reimplementing from API docs.

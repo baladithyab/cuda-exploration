@@ -26,7 +26,7 @@ TFLOPS (median, gpu_ms event-timed, RTX 5090 Blackwell, sm_120 native, CUDA 13.2
 
 Full per-N tables in [`results/scaling-summary.md`](results/scaling-summary.md). Raw data in [`results/scaling.csv`](results/scaling.csv) (240 rows).
 
-## Five findings
+## Seven findings
 
 ### 1. cuda-oxide naive is within 1% of nvcc — at the right N
 
@@ -47,6 +47,52 @@ cuBLAS sgemm with `CUBLAS_PEDANTIC_MATH` (strict f32, no TF32 path) hits 60-72 T
 ### 5. wgpu can't reach NVIDIA on WSL2
 
 The `wgpu-matmul/` folder documents what happens when you try to use the cross-vendor stack: only `llvmpipe` (Mesa CPU rasterizer) enumerates as a Vulkan adapter. The system has the NVIDIA driver passthrough at `/dev/dxg` and `nvidia_icd.json`, but the latter points to `libGLX_nvidia.so.0` (the OpenGL driver, not a Vulkan driver). DX12 backend on Linux/WSL needs `libdxcore`/`mesa-vulkan-drivers-microsoft` glue not packaged in Ubuntu 24.04. Net result: 0.005 TFLOPS at N=4096 on the CPU. **For Rust+GPU on WSL2 with NVIDIA hardware, cuda-oxide is the only working option.** See [`wgpu-matmul/ANALYSIS.md`](wgpu-matmul/ANALYSIS.md).
+
+### 6. Memory-bound kernels reach parity; the matmul gap is a compute-side compiler quality issue
+
+We added two new kernel classes in Wave 4 to test whether the matmul gap generalizes. It does not.
+
+**Sum-reduction (1 GB input, warp-shuffle two-stage):** cuda-oxide hits 1451 GB/s vs nvcc's 1517 GB/s — **96% parity**, both at ~85% of the 1.79 TB/s HBM peak. See [`oxide-reduction/`](oxide-reduction/) and [`cuda-reduction/`](cuda-reduction/).
+
+**Memory-bandwidth bench (3-buffer streaming `c = a + b`):** at the bandwidth-bound size N=64M, cuda-oxide-safe achieves 1608 GB/s vs nvcc's 1609 GB/s — **0.1% gap**, both at 90% of HBM peak. See [`oxide-vecadd-bench/`](oxide-vecadd-bench/) and [`cuda-vecadd-bench/`](cuda-vecadd-bench/).
+
+The implication: the cuda-oxide matmul gap at N=4096 is **not** a memory-subsystem issue or a kernel-launch issue. It is specifically a compute-throughput / instruction-scheduling issue that manifests when the inner loop is FMA-heavy. Memory-bound code reaches parity; compute-bound code reveals the compiler delta.
+
+### 7. SASS-level root cause: `LDG.E.CONSTANT` vs `LDG.E`, plus FMUL+FADD vs FFMA
+
+Wave 5 went one level below PTX into the actual SASS instructions emitted by ptxas, using `cuobjdump --dump-sass`. The hot K-loop in our naive matmul:
+
+| Metric                  | nvcc `matmul`      | oxide `matmul_unchecked` | oxide `matmul_fmuladd` |
+|-------------------------|--------------------|---------------------------|-------------------------|
+| FFMA per unrolled body  | **8**              | 0                         | **8**                   |
+| FMUL + FADD             | 0                  | 8 + 8                     | 0                       |
+| LDG count               | 16                 | 16                        | 16                      |
+| LDG cache variant       | **LDG.E.CONSTANT** | LDG.E                     | LDG.E                   |
+| K-loop unroll           | 8×                 | 8×                        | 8×                      |
+
+Two findings, both new vs the PTX-level analysis from Wave 3:
+
+**(a) Both compilers unroll the K-loop 8x.** The "missing unroll" hypothesis is rejected. cuda-oxide's loop unroller is doing its job.
+
+**(b) nvcc emits `LDG.E.CONSTANT` (read-only / uniform-cache hint), cuda-oxide emits plain `LDG.E`.** This is the SASS confirmation of what the upstream FMA issue draft hinted at PTX level. The `__restrict__` + `const` annotations on nvcc's pointer args promote loads to the read-only cache path; cuda-oxide's NVPTX lowering doesn't emit this hint even when the slice is shared and immutable. Two tractable upstream patches: thread `FastmathFlags::CONTRACT` through mir-lower (fixes finding (b)'s related FMA issue from Wave 3), and emit `LDG.E.CONSTANT` for `&[T]` reads from non-overlapping disjoint slices.
+
+See [`docs/experiments/sass-analysis.md`](docs/experiments/sass-analysis.md).
+
+## Wave 6: cuda-oxide on consumer vs datacenter Blackwell
+
+We tried to run three of cuda-oxide's bundled advanced examples on our RTX 5090 (sm_120, consumer Blackwell):
+
+| Example | Build on sm_120 | Run on sm_120 | Notes |
+|---|---|---|---|
+| `tma_copy` | ✅ | ✅ **Works** | Real `cp.async.bulk.tensor.2d.shared::cluster.global.tile.mbarrier::complete_tx::bytes` instructions in PTX. TMA (Tensor Memory Accelerator) is supported on consumer Blackwell. See [`oxide-tma-copy/ANALYSIS.md`](oxide-tma-copy/ANALYSIS.md). |
+| `gemm_sol` (cuda-oxide's flagship 868-TFLOPS-on-B200 example) | ✅ | ❌ **CUDA_ERROR_INVALID_PTX** | All 8 kernel variants depend on `tcgen05` (5th-gen Tensor Cores), which exists only on **datacenter Blackwell sm_100 / sm_100a**, not consumer sm_120. The example correctly detects this and prints a clear message. See [`oxide-gemm-sol/ANALYSIS.md`](oxide-gemm-sol/ANALYSIS.md). |
+| `tcgen05_matmul` | ✅ | ❌ Same as above | Same reason. PTX has 64 `tcgen05.*` instructions; consumer 5090 has no TMEM and no tcgen05 hardware to execute them. See [`oxide-tcgen05-matmul/ANALYSIS.md`](oxide-tcgen05-matmul/ANALYSIS.md). |
+
+**The Blackwell consumer/datacenter SM split matters for cuda-oxide today.** sm_120 (consumer: RTX 50-series) has 4th-gen Tensor Cores, FP4/FP8, and TMA — but no `tcgen05` instructions and no TMEM. cuda-oxide's flagship perf example only targets datacenter Blackwell (sm_100, B200/B100). For now, RTX 5090 owners can run cuda-oxide's basic + TMA examples but not the headline gemm_sol / tcgen05_matmul kernels. This is a hardware-feature gap, not a cuda-oxide gap — same constraint applies to writing tcgen05 in CUDA C++.
+
+## Wave 4 W4C: causal isolation of the libNVVM finding (inconclusive)
+
+The Phase 8 review flagged that the libNVVM corrigendum confounded two variables: libNVVM version (7.0.1 → 22.0.0) AND target arch (compute_89 → compute_120). We attempted to isolate them by forcing `CUDA_OXIDE_TARGET=sm_89` with the modern libNVVM. Result: modern libNVVM 22.0.0 **rejects rustc-codegen-cuda's IR for any arch ≤ sm_100** with `(13, 30): parse expected type` — a parse error on opaque pointers. The two variables are mechanically coupled in this toolchain; the experiment cannot be run as designed. **Implication for cuda-oxide:** the modern compiler frontend cannot target Ampere-or-earlier GPUs without rustc-codegen-cuda IR changes. This is a previously-undocumented portability constraint. See [`docs/experiments/libnvvm-causal-isolation.md`](docs/experiments/libnvvm-causal-isolation.md).
 
 ## Compiler gap deep-dive
 
@@ -72,11 +118,13 @@ Full setup at [`SETUP.md`](SETUP.md).
 
 It works. It works well enough that the headline performance number for naive kernels is **within 1% of CUDA C++**, which was not what we expected going in. The remaining gap is in tiled / compute-bound kernels where missing FMA-contraction-by-default costs 4-5× of the achievable speedup. Until that lands upstream, you can route around it via `core::intrinsics::fmuladdf32` for hot inner loops.
 
-| You are... | Recommendation |
-|---|---|
-| Greenfield Rust + NVIDIA GPU project, naive-ish kernels OK | **Use cuda-oxide.** v0.1.0 is alpha but the perf is real, the safety story is real, the tooling story (cargo, rustc-codegen-cuda) integrates cleanly. |
-| Need Tensor Cores / WGMMA / TMA, peak performance today | **Wait** for cuda-oxide v0.2 or use CUDA C++ for hot kernels + cuda-oxide for everything else. The tiled-kernel gap is real. |
-| Need cross-vendor (AMD/Intel/NVIDIA), one codebase | **Use wgpu** or **CubeCL**, not cuda-oxide. cuda-oxide is NVIDIA-only by design. |
+| You are... | GPU class | Recommendation |
+|---|---|---|
+| Greenfield Rust + NVIDIA project, naive-ish kernels, memory-bound work, reductions | Any sm_100+ Blackwell, sm_90 Hopper | **Use cuda-oxide.** v0.1.0 is alpha but on memory-bound work it hits parity with CUDA C++; on compute-bound naive kernels it's within 1% at small N and 85-90% at large N; on reductions it hits 96% of nvcc. The safety story is real, cargo/rustc-codegen-cuda integrates cleanly. |
+| Want to use cuda-oxide's flagship `gemm_sol` (868 TFLOPS-class TMA + tcgen05 pipeline) | sm_100 / sm_100a only (B200, B100, datacenter Blackwell) | **Hardware-gated.** Consumer RTX 50-series (sm_120) lacks tcgen05 / TMEM and cannot run the headline kernels. TMA itself works on sm_120; tcgen05 does not. |
+| Need Tensor Cores / WGMMA / TMA, peak performance today | sm_90+ but not on cuda-oxide's most advanced path | **Wait** for cuda-oxide v0.2 or use CUDA C++ for hot kernels + cuda-oxide for everything else. The tiled-kernel + LDG-cache gap is real (see Wave 5 SASS analysis). |
+| Targeting Ampere or earlier (sm_86, sm_80) | sm_89 and below | **Cannot use cuda-oxide today.** Modern libNVVM 22.0.0 rejects rustc-codegen-cuda's IR for any arch ≤ sm_100 (Wave 4 W4C). Stuck with CUDA C++ until upstream fix. |
+| Need cross-vendor (AMD/Intel/NVIDIA), one codebase | Any | **Use wgpu** or **CubeCL**, not cuda-oxide. cuda-oxide is NVIDIA-only by design. |
 
 ## What's next (followups)
 

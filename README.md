@@ -26,7 +26,17 @@ Full scaling sweep — 7 `(impl, kernel)` configurations × N ∈ {1024, 2048, 4
 - **Tiling speedup (tiled / naive):** nvcc gets 3.6×/5.3×/4.5×; cuda-oxide gets 1.3×/1.2×/1.6× — compiler gap widens with tiling (missing default-FMA contraction + K-loop unroll).
 - **wgpu/WGSL on WSL2:** falls back to llvmpipe CPU, ~1000× slower; boundary is WSL2 Vulkan passthrough, not wgpu.
 
-**→ See [SUMMARY.md](SUMMARY.md) for the full writeup**, or [`results/scaling-summary.md`](results/scaling-summary.md) for per-size best/median/p95 tables. The libNVVM correction is in [`docs/experiments/libnvvm-corrigendum.md`](docs/experiments/libnvvm-corrigendum.md). PTX-level deltas in per-folder `ANALYSIS.md` files.
+**→ See [SUMMARY.md](SUMMARY.md) for the full writeup**, or [`results/scaling-summary.md`](results/scaling-summary.md) for per-size best/median/p95 tables. The libNVVM correction is in [`docs/experiments/libnvvm-corrigendum.md`](docs/experiments/libnvvm-corrigendum.md). PTX-level deltas in per-folder `ANALYSIS.md` files. SASS-level deep-dive in [`docs/experiments/sass-analysis.md`](docs/experiments/sass-analysis.md).
+
+## Wave 4-6 follow-up findings (additional kernel classes + advanced features)
+
+Beyond matmul we ran reduction, memory-bandwidth, and three of cuda-oxide's bundled advanced examples. Highlights:
+
+- **Reduction (1 GB warp-shuffle):** cuda-oxide hits **96% of nvcc** (1451 vs 1517 GB/s, both ~85% of HBM peak). See [`oxide-reduction/`](oxide-reduction/), [`cuda-reduction/`](cuda-reduction/).
+- **Memory bandwidth (3-buffer streaming):** **0.1% gap** at N=64M (1608 vs 1609 GB/s, 90% of HBM peak). See [`oxide-vecadd-bench/`](oxide-vecadd-bench/), [`cuda-vecadd-bench/`](cuda-vecadd-bench/).
+- **SASS root cause for the matmul gap:** nvcc emits `LDG.E.CONSTANT` (read-only cache hint) where cuda-oxide emits plain `LDG.E`. Both unroll 8×. See [`docs/experiments/sass-analysis.md`](docs/experiments/sass-analysis.md).
+- **Consumer vs datacenter Blackwell:** cuda-oxide's flagship `gemm_sol` and `tcgen05_matmul` examples build but **fail at runtime** on RTX 5090 (sm_120) — they require sm_100/sm_100a (datacenter Blackwell, B100/B200). `tma_copy` works on consumer Blackwell. See [`oxide-gemm-sol/`](oxide-gemm-sol/), [`oxide-tcgen05-matmul/`](oxide-tcgen05-matmul/), [`oxide-tma-copy/`](oxide-tma-copy/).
+- **Older arch unreachable:** modern libNVVM 22.0.0 rejects rustc-codegen-cuda IR for any arch ≤ sm_100. Cannot target Ampere/Ada with current cuda-oxide. See [`docs/experiments/libnvvm-causal-isolation.md`](docs/experiments/libnvvm-causal-isolation.md).
 
 ## Three findings
 
