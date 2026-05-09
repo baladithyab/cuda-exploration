@@ -7,6 +7,14 @@
 // Wave 1 W1A (ADR-0001): kernel-only timing via cuEventRecord on stream 0
 // (default stream). CPU wall-clock also retained for debug visibility.
 // Size sweep over N in {1024, 2048, 4096}. CSV output for downstream tooling.
+//
+// Wave 3 W3A: added `matmul_fmuladd` kernel using `core::intrinsics::fmuladdf32`
+// to test whether the explicit-FMA escape hatch yields `fma.rn.f32` in the
+// generated PTX. Kernel is compiled (present in PTX) but NOT launched from
+// the host driver — bench loop is unchanged. PTX inspection only.
+
+#![feature(core_intrinsics)]
+#![allow(internal_features)]
 
 use cuda_core::{CudaContext, CudaEvent, CudaModule, CudaStream, DeviceBuffer, LaunchConfig, sys};
 use cuda_device::{DisjointSlice, kernel, thread};
@@ -63,6 +71,46 @@ pub fn matmul_unchecked(a: &[f32], b: &[f32], mut c: DisjointSlice<f32>, dim: u3
             let av = *a_base.add(r * dim_us + k);
             let bv = *b_base.add(k * dim_us + c_idx);
             acc += av * bv;
+        }
+        k += 1;
+    }
+    unsafe {
+        *c.as_mut_ptr().add(r * dim_us + c_idx) = acc;
+    }
+}
+
+// Wave 3 W3A: explicit-FMA variant using `core::intrinsics::fmuladdf32`.
+// Per `docs/research/cuda-oxide-flags.md`, cuda-oxide's mir-lower maps
+// `FmuladdF32` to a libdevice call `__nv_fmaf` rather than the LLVM
+// `llvm.fmuladd.f32` intrinsic (call.rs:269-270). So we expect the emitted
+// PTX to contain `call __nv_fmaf` / extern-call bl sequences rather than
+// `fma.rn.f32` instructions. This kernel lets us verify that empirically
+// by inspecting the regenerated oxide_matmul.ptx.
+//
+// Not launched from the host driver — inspection only.
+#[kernel]
+pub fn matmul_fmuladd(a: &[f32], b: &[f32], mut c: DisjointSlice<f32>, dim: u32) {
+    let row = thread::blockIdx_y() * thread::blockDim_y() + thread::threadIdx_y();
+    let col = thread::blockIdx_x() * thread::blockDim_x() + thread::threadIdx_x();
+    if row >= dim || col >= dim {
+        return;
+    }
+    let dim_us = dim as usize;
+    let r = row as usize;
+    let c_idx = col as usize;
+    let a_base = a.as_ptr();
+    let b_base = b.as_ptr();
+    let mut acc: f32 = 0.0;
+    let mut k: usize = 0;
+    while k < dim_us {
+        // SAFETY: row, col < dim and 0 <= k < dim_us — both reads in bounds.
+        unsafe {
+            let av = *a_base.add(r * dim_us + k);
+            let bv = *b_base.add(k * dim_us + c_idx);
+            // Explicit fused-multiply-add. Expected to lower to
+            // `__nv_fmaf(av, bv, acc)` via libdevice, NOT to a native
+            // `fma.rn.f32` PTX instruction.
+            acc = core::intrinsics::fmuladdf32(av, bv, acc);
         }
         k += 1;
     }
