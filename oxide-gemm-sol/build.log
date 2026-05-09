@@ -1,0 +1,899 @@
+=========================================
+RUSTC-CODEGEN-CUDA BUILD: oxide-gemm-sol
+=========================================
+
+Building oxide-gemm-sol...
+
+    Updating git repository `https://github.com/NVlabs/cuda-oxide.git`
+     Locking 8 packages to latest Rust 1.96.0-nightly compatible versions
+      Adding cuda-bindings v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#9822c760)
+      Adding cuda-core v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#9822c760)
+      Adding cuda-device v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#9822c760)
+      Adding cuda-host v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#9822c760)
+      Adding cuda-macros v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#9822c760)
+      Adding libnvvm-sys v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#9822c760)
+      Adding nvjitlink-sys v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#9822c760)
+      Adding reserved-oxide-symbols v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#9822c760)
+   Compiling proc-macro2 v1.0.106
+   Compiling quote v1.0.45
+   Compiling unicode-ident v1.0.24
+   Compiling glob v0.3.3
+   Compiling libc v0.2.184
+   Compiling prettyplease v0.2.37
+   Compiling minimal-lexical v0.2.1
+   Compiling memchr v2.8.0
+   Compiling regex-syntax v0.8.10
+   Compiling cfg-if v1.0.4
+   Compiling bindgen v0.71.1
+   Compiling libloading v0.8.9
+   Compiling either v1.15.0
+   Compiling itertools v0.13.0
+   Compiling bitflags v2.11.0
+   Compiling rustc-hash v2.1.2
+   Compiling nom v7.1.3
+   Compiling shlex v1.3.0
+   Compiling clang-sys v1.8.1
+   Compiling log v0.4.29
+   Compiling thiserror v2.0.18
+   Compiling zerocopy v0.8.48
+   Compiling syn v2.0.117
+   Compiling regex-automata v0.4.14
+   Compiling cexpr v0.6.0
+   Compiling anyhow v1.0.102
+   Compiling reserved-oxide-symbols v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#9822c760)
+   Compiling regex v1.12.3
+   Compiling thiserror-impl v2.0.18
+   Compiling zerocopy-derive v0.8.48
+   Compiling cuda-macros v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#9822c760)
+   Compiling nvjitlink-sys v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#9822c760)
+   Compiling cuda-bindings v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#9822c760)
+   Compiling libnvvm-sys v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#9822c760)
+   Compiling cuda-core v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#9822c760)
+   Compiling cuda-device v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#9822c760)
+   Compiling half v2.7.1
+   Compiling cuda-host v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#9822c760)
+   Compiling oxide-gemm-sol v0.1.0 (/home/codeseys/cuda-oxide-bench/oxide-gemm-sol)
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_pipelined::TMEM_ADDR` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:714:27
+    |
+714 |             tcgen05_alloc(&raw mut TMEM_ADDR as *mut u32, 512);
+    |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_pipelined::TMEM_ADDR` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:717:38
+    |
+717 |         let tmem_addr = *(&raw const TMEM_ADDR as *const u32);
+    |                                      ^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_pipelined::SMEM_A0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:733:17
+    |
+733 |                 &raw mut SMEM_A0 as *mut u8,
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_pipelined::SMEM_B0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:740:17
+    |
+740 |                 &raw mut SMEM_B0 as *mut u8,
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_pipelined::SMEM_A0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:777:32
+    |
+777 |                     &raw const SMEM_A0 as u64
+    |                                ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_pipelined::SMEM_A1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:779:32
+    |
+779 |                     &raw const SMEM_A1 as u64
+    |                                ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_pipelined::SMEM_B0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:782:32
+    |
+782 |                     &raw const SMEM_B0 as u64
+    |                                ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_pipelined::SMEM_B1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:784:32
+    |
+784 |                     &raw const SMEM_B1 as u64
+    |                                ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_pipelined::SMEM_A1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:816:25
+    |
+816 |                         &raw mut SMEM_A1 as *mut u8,
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_pipelined::SMEM_B1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:823:25
+    |
+823 |                         &raw mut SMEM_B1 as *mut u8,
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_pipelined::SMEM_A0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:832:25
+    |
+832 |                         &raw mut SMEM_A0 as *mut u8,
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_pipelined::SMEM_B0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:839:25
+    |
+839 |                         &raw mut SMEM_B0 as *mut u8,
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_pipelined::SMEM_OUT` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:885:36
+    |
+885 |                 let smem_addr_lo = (&raw mut SMEM_OUT as *mut u8)
+    |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_pipelined::SMEM_OUT` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:918:50
+    |
+918 |             *out.get_unchecked_mut(global_idx) = SMEM_OUT[local_idx];
+    |                                                  ^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_persistent::TMEM_ADDR` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1400:27
+     |
+1400 |             tcgen05_alloc(&raw mut TMEM_ADDR as *mut u32, 512);
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_persistent::TMEM_ADDR` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1403:38
+     |
+1403 |         let tmem_addr = *(&raw const TMEM_ADDR as *const u32);
+     |                                      ^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_persistent::TILE_INFO` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1434:26
+     |
+1434 |                         *(&raw mut TILE_INFO as *mut u32).add(0) = tile_id / tiles_n;
+     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_persistent::TILE_INFO` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1438:26
+     |
+1438 |                         *(&raw mut TILE_INFO as *mut u32).add(2) = 0;
+     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_persistent::TILE_INFO` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1443:45
+     |
+1443 |                 let has_work = *(&raw const TILE_INFO as *const u32).add(2);
+     |                                             ^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_persistent::SMEM_A0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1468:33
+     |
+1468 | ...                   &raw mut SMEM_A0 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_persistent::SMEM_B0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1475:33
+     |
+1475 | ...                   &raw mut SMEM_B0 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_persistent::SMEM_A1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1488:33
+     |
+1488 | ...                   &raw mut SMEM_A1 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_persistent::SMEM_B1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1495:33
+     |
+1495 | ...                   &raw mut SMEM_B1 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_persistent::TILE_INFO` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1537:45
+     |
+1537 |                 let has_work = *(&raw const TILE_INFO as *const u32).add(2);
+     |                                             ^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_persistent::SMEM_A0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1569:40
+     |
+1569 | ...                   &raw const SMEM_A0 as u64
+     |                                  ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_persistent::SMEM_A1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1571:40
+     |
+1571 | ...                   &raw const SMEM_A1 as u64
+     |                                  ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_persistent::SMEM_B0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1574:40
+     |
+1574 | ...                   &raw const SMEM_B0 as u64
+     |                                  ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_persistent::SMEM_B1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1576:40
+     |
+1576 | ...                   &raw const SMEM_B1 as u64
+     |                                  ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_persistent::TILE_INFO` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1650:45
+     |
+1650 |                 let has_work = *(&raw const TILE_INFO as *const u32).add(2);
+     |                                             ^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_persistent::SMEM_OUT` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1697:44
+     |
+1697 |                         let smem_addr_lo = (&raw mut SMEM_OUT as *mut u8).add(
+     |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_persistent::SMEM_OUT` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1731:58
+     |
+1731 |                     *out.get_unchecked_mut(global_idx) = SMEM_OUT[smem_idx];
+     |                                                          ^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::TMEM_ADDR` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1889:27
+     |
+1889 |             tcgen05_alloc(&raw mut TMEM_ADDR as *mut u32, 512);
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::TMEM_ADDR` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1892:38
+     |
+1892 |         let tmem_addr = *(&raw const TMEM_ADDR as *const u32);
+     |                                      ^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::TILE_INFO` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1919:18
+     |
+1919 |                 *(&raw mut TILE_INFO as *mut u32).add(0) = first_tile_m;
+     |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::SMEM_A0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1943:29
+     |
+1943 | ...                   &raw mut SMEM_A0 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::SMEM_B0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1950:29
+     |
+1950 | ...                   &raw mut SMEM_B0 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::SMEM_A1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1963:29
+     |
+1963 | ...                   &raw mut SMEM_A1 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::SMEM_B1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1970:29
+     |
+1970 | ...                   &raw mut SMEM_B1 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::CLC_RESPONSE` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1992:28
+     |
+1992 |             let resp_ptr = &raw mut CLC_RESPONSE as *mut u64;
+     |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::CLC_RESPONSE` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1999:36
+     |
+1999 |                     clc_try_cancel(resp_ptr as *mut u8, &raw mut CLC_BAR);
+     |                                    ^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::TILE_INFO` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2012:26
+     |
+2012 |                         *(&raw mut TILE_INFO as *mut u32).add(2) = 0;
+     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::TILE_INFO` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2027:26
+     |
+2027 |                         *(&raw mut TILE_INFO as *mut u32).add(0) = tile_m;
+     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::SMEM_A0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2051:37
+     |
+2051 | ...                   &raw mut SMEM_A0 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::SMEM_B0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2058:37
+     |
+2058 | ...                   &raw mut SMEM_B0 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::SMEM_A1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2071:37
+     |
+2071 | ...                   &raw mut SMEM_A1 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::SMEM_B1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2078:37
+     |
+2078 | ...                   &raw mut SMEM_B1 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::TILE_INFO` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2116:45
+     |
+2116 |                 let has_work = *(&raw const TILE_INFO as *const u32).add(2);
+     |                                             ^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::SMEM_A0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2146:40
+     |
+2146 | ...                   &raw const SMEM_A0 as u64
+     |                                  ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::SMEM_A1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2148:40
+     |
+2148 | ...                   &raw const SMEM_A1 as u64
+     |                                  ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::SMEM_B0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2151:40
+     |
+2151 | ...                   &raw const SMEM_B0 as u64
+     |                                  ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::SMEM_B1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2153:40
+     |
+2153 | ...                   &raw const SMEM_B1 as u64
+     |                                  ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::TILE_INFO` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2224:45
+     |
+2224 |                 let has_work = *(&raw const TILE_INFO as *const u32).add(2);
+     |                                             ^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::SMEM_OUT` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2268:44
+     |
+2268 |                         let smem_addr_lo = (&raw mut SMEM_OUT as *mut u8).add(
+     |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc::SMEM_OUT` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2301:58
+     |
+2301 |                     *out.get_unchecked_mut(global_idx) = SMEM_OUT[smem_idx];
+     |                                                          ^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::TMEM_ADDR` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3109:31
+     |
+3109 |             tcgen05_alloc_cg2(&raw mut TMEM_ADDR as *mut u32, 512);
+     |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::TMEM_ADDR` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3112:38
+     |
+3112 |         let tmem_addr = *(&raw const TMEM_ADDR as *const u32);
+     |                                      ^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::TILE_INFO` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3141:18
+     |
+3141 |                 *(&raw mut TILE_INFO as *mut u32).add(0) = first_tile_m;
+     |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_A3` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3185:25
+     |
+3185 |                         &raw mut SMEM_A3 as *mut u8,
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_B3` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3186:25
+     |
+3186 |                         &raw mut SMEM_B3 as *mut u8,
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_A2` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3178:25
+     |
+3178 |                         &raw mut SMEM_A2 as *mut u8,
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_B2` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3179:25
+     |
+3179 |                         &raw mut SMEM_B2 as *mut u8,
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_A1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3171:25
+     |
+3171 |                         &raw mut SMEM_A1 as *mut u8,
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_B1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3172:25
+     |
+3172 |                         &raw mut SMEM_B1 as *mut u8,
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_A0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3164:25
+     |
+3164 |                         &raw mut SMEM_A0 as *mut u8,
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_B0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3165:25
+     |
+3165 |                         &raw mut SMEM_B0 as *mut u8,
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::CLC_RESPONSE` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3236:28
+     |
+3236 |             let resp_ptr = &raw mut CLC_RESPONSE as *mut u64;
+     |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::CLC_RESPONSE` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3243:50
+     |
+3243 |                         clc_try_cancel_multicast(resp_ptr as *mut u8, &raw mut CLC_BAR);
+     |                                                  ^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::TILE_INFO` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3254:26
+     |
+3254 |                         *(&raw mut TILE_INFO as *mut u32).add(2) = 0;
+     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::TILE_INFO` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3269:22
+     |
+3269 |                     *(&raw mut TILE_INFO as *mut u32).add(0) = tile_m;
+     |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_A3` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3313:29
+     |
+3313 | ...                   &raw mut SMEM_A3 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_B3` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3314:29
+     |
+3314 | ...                   &raw mut SMEM_B3 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_A2` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3306:29
+     |
+3306 | ...                   &raw mut SMEM_A2 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_B2` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3307:29
+     |
+3307 | ...                   &raw mut SMEM_B2 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_A1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3299:29
+     |
+3299 | ...                   &raw mut SMEM_A1 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_B1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3300:29
+     |
+3300 | ...                   &raw mut SMEM_B1 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_A0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3292:29
+     |
+3292 | ...                   &raw mut SMEM_A0 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_B0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3293:29
+     |
+3293 | ...                   &raw mut SMEM_B0 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::TILE_INFO` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3368:45
+     |
+3368 |                 let has_work = *(&raw const TILE_INFO as *const u32).add(2);
+     |                                             ^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_A3` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3421:40
+     |
+3421 | ...                   &raw const SMEM_A3 as u64,
+     |                                  ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_B3` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3422:40
+     |
+3422 | ...                   &raw const SMEM_B3 as u64,
+     |                                  ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_A2` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3415:40
+     |
+3415 | ...                   &raw const SMEM_A2 as u64,
+     |                                  ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_B2` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3416:40
+     |
+3416 | ...                   &raw const SMEM_B2 as u64,
+     |                                  ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_A1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3409:40
+     |
+3409 | ...                   &raw const SMEM_A1 as u64,
+     |                                  ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_B1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3410:40
+     |
+3410 | ...                   &raw const SMEM_B1 as u64,
+     |                                  ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_A0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3403:40
+     |
+3403 | ...                   &raw const SMEM_A0 as u64,
+     |                                  ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_B0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3404:40
+     |
+3404 | ...                   &raw const SMEM_B0 as u64,
+     |                                  ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::TILE_INFO` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3516:45
+     |
+3516 |                 let has_work = *(&raw const TILE_INFO as *const u32).add(2);
+     |                                             ^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_OUT` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3560:44
+     |
+3560 |                         let smem_addr_lo = (&raw mut SMEM_OUT as *mut u8).add(
+     |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast_4_stage_pipeline::SMEM_OUT` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:3593:58
+     |
+3593 |                     *out.get_unchecked_mut(global_idx) = SMEM_OUT[smem_idx];
+     |                                                          ^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_tiled::TMEM_ADDR` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:192:27
+    |
+192 |             tcgen05_alloc(&raw mut TMEM_ADDR as *mut u32, 512);
+    |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_tiled::TMEM_ADDR` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:195:38
+    |
+195 |         let tmem_addr = *(&raw const TMEM_ADDR as *const u32);
+    |                                      ^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_tiled::SMEM_A` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:222:34
+    |
+222 |                 let smem_a_ptr = &raw mut SMEM_A as *mut u8;
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_tiled::SMEM_B` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:223:34
+    |
+223 |                 let smem_b_ptr = &raw mut SMEM_B as *mut u8;
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_tiled::SMEM_A` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:268:46
+    |
+268 |                 let smem_a_base = &raw const SMEM_A as u64;
+    |                                              ^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_tiled::SMEM_B` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:269:46
+    |
+269 |                 let smem_b_base = &raw const SMEM_B as u64;
+    |                                              ^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_tiled::SMEM_OUT` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:356:36
+    |
+356 |                 let smem_addr_lo = (&raw mut SMEM_OUT as *mut u8)
+    |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_tiled::SMEM_OUT` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:392:50
+    |
+392 |             *out.get_unchecked_mut(global_idx) = SMEM_OUT[local_idx];
+    |                                                  ^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_warp_spec::TMEM_ADDR` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1032:27
+     |
+1032 |             tcgen05_alloc(&raw mut TMEM_ADDR as *mut u32, 512);
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_warp_spec::TMEM_ADDR` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1035:38
+     |
+1035 |         let tmem_addr = *(&raw const TMEM_ADDR as *const u32);
+     |                                      ^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_warp_spec::SMEM_A0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1077:29
+     |
+1077 | ...                   &raw mut SMEM_A0 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_warp_spec::SMEM_B0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1084:29
+     |
+1084 | ...                   &raw mut SMEM_B0 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_warp_spec::SMEM_A1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1097:29
+     |
+1097 | ...                   &raw mut SMEM_A1 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_warp_spec::SMEM_B1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1104:29
+     |
+1104 | ...                   &raw mut SMEM_B1 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_warp_spec::SMEM_A0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1142:36
+     |
+1142 |                         &raw const SMEM_A0 as u64
+     |                                    ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_warp_spec::SMEM_A1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1144:36
+     |
+1144 |                         &raw const SMEM_A1 as u64
+     |                                    ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_warp_spec::SMEM_B0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1147:36
+     |
+1147 |                         &raw const SMEM_B0 as u64
+     |                                    ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_warp_spec::SMEM_B1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1149:36
+     |
+1149 |                         &raw const SMEM_B1 as u64
+     |                                    ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_warp_spec::SMEM_OUT` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1224:40
+     |
+1224 |                     let smem_addr_lo = (&raw mut SMEM_OUT as *mut u8).add(
+     |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_warp_spec::SMEM_OUT` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:1261:50
+     |
+1261 |             *out.get_unchecked_mut(global_idx) = SMEM_OUT[local_idx];
+     |                                                  ^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_swizzled::TMEM_ADDR` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:478:27
+    |
+478 |             tcgen05_alloc(&raw mut TMEM_ADDR as *mut u32, 512);
+    |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_swizzled::TMEM_ADDR` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:481:38
+    |
+481 |         let tmem_addr = *(&raw const TMEM_ADDR as *const u32);
+    |                                      ^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_swizzled::SMEM_A` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:504:34
+    |
+504 |                 let smem_a_ptr = &raw mut SMEM_A as *mut u8;
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_swizzled::SMEM_B` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:505:34
+    |
+505 |                 let smem_b_ptr = &raw mut SMEM_B as *mut u8;
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_swizzled::SMEM_A` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:524:46
+    |
+524 |                 let smem_a_base = &raw const SMEM_A as u64;
+    |                                              ^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_swizzled::SMEM_B` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:525:46
+    |
+525 |                 let smem_b_base = &raw const SMEM_B as u64;
+    |                                              ^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_swizzled::SMEM_OUT` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:586:36
+    |
+586 |                 let smem_addr_lo = (&raw mut SMEM_OUT as *mut u8)
+    |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_swizzled::SMEM_OUT` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:619:50
+    |
+619 |             *out.get_unchecked_mut(global_idx) = SMEM_OUT[local_idx];
+    |                                                  ^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::TMEM_ADDR` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2477:27
+     |
+2477 |             tcgen05_alloc(&raw mut TMEM_ADDR as *mut u32, 512);
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::TMEM_ADDR` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2480:38
+     |
+2480 |         let tmem_addr = *(&raw const TMEM_ADDR as *const u32);
+     |                                      ^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::TILE_INFO` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2512:18
+     |
+2512 |                 *(&raw mut TILE_INFO as *mut u32).add(0) = first_tile_m;
+     |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::SMEM_A0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2561:29
+     |
+2561 | ...                   &raw mut SMEM_A0 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::SMEM_B0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2569:33
+     |
+2569 | ...                   &raw mut SMEM_B0 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::SMEM_A1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2586:29
+     |
+2586 | ...                   &raw mut SMEM_A1 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::SMEM_B1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2594:33
+     |
+2594 | ...                   &raw mut SMEM_B1 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::CLC_RESPONSE` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2613:32
+     |
+2613 |                 let resp_ptr = &raw mut CLC_RESPONSE as *mut u64;
+     |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::CLC_RESPONSE` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2621:54
+     |
+2621 | ...                   clc_try_cancel_multicast(resp_ptr as *mut u8, &raw mut CLC_BAR);
+     |                                                ^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::TILE_INFO` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2633:30
+     |
+2633 | ...                   *(&raw mut TILE_INFO as *mut u32).add(2) = 0;
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::TILE_INFO` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2645:26
+     |
+2645 |                         *(&raw mut TILE_INFO as *mut u32).add(0) = tile_m;
+     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::SMEM_A0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2699:37
+     |
+2699 | ...                   &raw mut SMEM_A0 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::SMEM_B0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2707:41
+     |
+2707 | ...                   &raw mut SMEM_B0 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::SMEM_A1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2724:37
+     |
+2724 | ...                   &raw mut SMEM_A1 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::SMEM_B1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2732:41
+     |
+2732 | ...                   &raw mut SMEM_B1 as *mut u8,
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::TILE_INFO` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2765:45
+     |
+2765 |                 let has_work = *(&raw const TILE_INFO as *const u32).add(2);
+     |                                             ^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::SMEM_A0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2795:40
+     |
+2795 | ...                   &raw const SMEM_A0 as u64
+     |                                  ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::SMEM_A1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2797:40
+     |
+2797 | ...                   &raw const SMEM_A1 as u64
+     |                                  ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::SMEM_B0` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2800:40
+     |
+2800 | ...                   &raw const SMEM_B0 as u64
+     |                                  ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::SMEM_B1` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2802:40
+     |
+2802 | ...                   &raw const SMEM_B1 as u64
+     |                                  ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::TILE_INFO` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2873:45
+     |
+2873 |                 let has_work = *(&raw const TILE_INFO as *const u32).add(2);
+     |                                             ^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::SMEM_OUT` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2917:44
+     |
+2917 |                         let smem_addr_lo = (&raw mut SMEM_OUT as *mut u8).add(
+     |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gemm_sol_clc_multicast::SMEM_OUT` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+    --> src/main.rs:2950:58
+     |
+2950 |                     *out.get_unchecked_mut(global_idx) = SMEM_OUT[smem_idx];
+     |                                                          ^^^^^^^^
+
+warning: `oxide-gemm-sol` (bin "oxide-gemm-sol") generated 140 warnings
+    Finished `release` profile [optimized] target(s) in 1m 09s
+
+✓ Build succeeded

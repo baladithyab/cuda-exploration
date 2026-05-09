@@ -1,0 +1,16 @@
+═══════════════════════════════════════════════════════
+  GEMM Speed-of-Light — All Phases
+═══════════════════════════════════════════════════════
+
+GPU: sm_120
+Loading PTX: /home/codeseys/cuda-oxide-bench/oxide-gemm-sol/gemm_sol.ptx
+
+⚠️  tcgen05 (5th gen tensor cores) requires sm_100 (datacenter Blackwell only).
+   Your GPU is sm_120 (consumer Blackwell has no tcgen05).
+   PTX was generated successfully; run on sm_100 to execute kernels.
+
+PTX Verification:
+   PTX file generated at: /home/codeseys/cuda-oxide-bench/oxide-gemm-sol/gemm_sol.ptx
+
+   To inspect generated PTX:
+   cat /home/codeseys/cuda-oxide-bench/oxide-gemm-sol/gemm_sol.ptx

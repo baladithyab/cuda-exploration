@@ -1,0 +1,23 @@
+[package]
+name = "oxide-gemm-sol"
+version = "0.1.0"
+edition = "2024"
+authors = ["Nihal Pasham <nihalp@nvidia.com>"]
+license = "Apache-2.0"
+
+# Mark as standalone crate (not part of parent workspace)
+[workspace]
+
+# Phase 1 GEMM: K-loop + grid tiling, no pre-tiling (SM100+ / Blackwell).
+# Build with:
+#   cargo oxide run oxide-gemm-sol
+
+[[bin]]
+name = "oxide-gemm-sol"
+path = "src/main.rs"
+
+[dependencies]
+cuda-device = { git = "https://github.com/NVlabs/cuda-oxide.git" }
+cuda-host = { git = "https://github.com/NVlabs/cuda-oxide.git" }
+cuda-core = { git = "https://github.com/NVlabs/cuda-oxide.git" }
+half = "2.4"
