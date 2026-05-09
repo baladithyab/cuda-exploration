@@ -4,14 +4,28 @@ A fair-comparison benchmark of [**cuda-oxide**](https://github.com/NVlabs/cuda-o
 
 ## Headline results
 
-4096×4096 f32 matmul (137.44 GFLOP/iter), 16×16 thread block, identical naive algorithm:
+Full scaling sweep — 7 `(impl, kernel)` configurations × N ∈ {1024, 2048, 4096} × 10 iters, `cudaEvent` timed, nvcc 13.2 native `-arch=sm_120`.
 
-- **nvcc CUDA C++** `-arch=sm_89` — best 20.64 ms, median 21.53 ms, **6.39 TFLOPS**, 1.00×
-- **cuda-oxide (unchecked, raw ptr)** — best 22.43 ms, median 23.15 ms, **5.94 TFLOPS**, **0.93×**
-- **cuda-oxide (safe slice idx)** — best 51.82 ms, median 56.86 ms, 2.42 TFLOPS, 0.38×
-- **wgpu/WGSL via llvmpipe CPU** — best ~25 000 ms, median ~25 700 ms, 0.005 TFLOPS, ~0.001×
+**TFLOPS vs N (median of 10 iterations):**
 
-(Full results and PTX instruction counts in [`analysis/ptx-stats.txt`](analysis/ptx-stats.txt).)
+| impl/kernel \ N | 1024 | 2048 | 4096 |
+|---|---:|---:|---:|
+| cublas-matmul/sgemm | **33.94** | **62.98** | **59.83** |
+| cuda-tiled/matmul_tiled | 24.47 | 33.44 | 28.07 |
+| oxide-tiled/unchecked | 9.02 | 6.60 | 7.95 |
+| oxide-tiled/safe | 8.83 | 5.56 | 7.69 |
+| cuda-matmul/matmul | 6.88 | 6.33 | 6.23 |
+| oxide/unchecked | 6.51 | 4.92 | 4.96 |
+| oxide/safe | 2.80 | 2.40 | 2.01 |
+
+**Key ratios (median):**
+
+- **cuda-oxide unchecked vs nvcc naive:** 0.95× / 0.78× / 0.80× across N — closest at N=1024.
+- **Rust safety tax (unchecked → safe):** 2.32× / 2.05× / 2.47× slowdown.
+- **Tiling speedup (tiled / naive):** nvcc gets 3.6×/5.3×/4.5×; cuda-oxide gets 1.4×/1.3×/1.6× — compiler gap widens with tiling (missing FMA + K-loop unroll).
+- **wgpu/WGSL on WSL2:** falls back to llvmpipe CPU, ~1000× slower; boundary is WSL2 Vulkan passthrough, not wgpu.
+
+**→ See [SUMMARY.md](SUMMARY.md) for the full writeup**, or [`results/scaling-summary.md`](results/scaling-summary.md) for per-size best/median/p95 tables. PTX-level deltas in [`analysis/ptx-stats.txt`](analysis/ptx-stats.txt) and the per-folder `ANALYSIS.md` files.
 
 ## Three findings
 
