@@ -1,0 +1,64 @@
+Loading ../oxide-3dgs-real/scenes/utsuho_plush.ply
+PLY header: 53671 vertices, 62 float props
+Parsed 53671 gaussians
+[cuda] device: NVIDIA GeForce RTX 5090 (sm_120)
+Scene centroid: (0.179, 0.123, 0.179)
+Scene bbox   : min=(-0.971,-2.151,-2.587) max=(1.473,2.454,3.202)
+Scene diag   : 7.790
+=== [camA_minusZ] ===
+  project: total=53671 projected=53671 culled_behind=0 culled_far=0 culled_bad_cov=0
+  depth_range=[8.919, 14.707]
+  mean2d_range=[(320.6,221.8)..(488.7,577.5)]
+  conic_scale_median=2.4758
+  projection+sort (host): 9.114 ms
+  H2D copy: 0.699 ms
+  kernel iter 0: 43.012 ms
+  kernel iter 1: 41.948 ms
+  kernel iter 2: 41.132 ms
+  median kernel time: 41.948 ms
+  D2H copy: 5.527 ms
+  nonzero pixels: 42088/640000 = 6.58%
+  wrote output_utsuho_plush_A.ppm
+=== [camB_plusZ_noflip] ===
+  project: total=53671 projected=0 culled_behind=53671 culled_far=0 culled_bad_cov=0
+  depth_range=[inf, -inf]
+  mean2d_range=[(inf,inf)..(-inf,-inf)]
+  conic_scale_median=0.0000
+  projection+sort (host): 0.074 ms
+  [camB_plusZ_noflip] no gaussians; skipping
+=== [camC_flipY] ===
+  project: total=53671 projected=53671 culled_behind=0 culled_far=0 culled_bad_cov=0
+  depth_range=[8.919, 14.707]
+  mean2d_range=[(320.6,222.5)..(488.7,578.2)]
+  conic_scale_median=2.4758
+  projection+sort (host): 7.596 ms
+  H2D copy: 0.480 ms
+  kernel iter 0: 37.425 ms
+  kernel iter 1: 38.895 ms
+  kernel iter 2: 37.569 ms
+  median kernel time: 37.569 ms
+  D2H copy: 1.006 ms
+  nonzero pixels: 42088/640000 = 6.58%
+  wrote output_utsuho_plush_C.ppm
+=== [camD_roty180] ===
+  project: total=53671 projected=53671 culled_behind=0 culled_far=0 culled_bad_cov=0
+  depth_range=[8.663, 14.451]
+  mean2d_range=[(306.8,243.5)..(478.4,574.0)]
+  conic_scale_median=2.3819
+  projection+sort (host): 7.518 ms
+  H2D copy: 0.312 ms
+  kernel iter 0: 36.398 ms
+  kernel iter 1: 36.446 ms
+  kernel iter 2: 36.760 ms
+  median kernel time: 36.446 ms
+  D2H copy: 0.865 ms
+  nonzero pixels: 40381/640000 = 6.31%
+  wrote output_utsuho_plush_D.ppm
+wrote canonical output_utsuho_plush.ppm (= cam A)
+
+===== SUMMARY =====
+cam   n_proj   proj_ms   h2d_ms   median_kernel_ms
+A       53671     9.114    0.699      41.948
+B           0     0.074    0.000       0.000
+C       53671     7.596    0.480      37.569
+D       53671     7.518    0.312      36.446

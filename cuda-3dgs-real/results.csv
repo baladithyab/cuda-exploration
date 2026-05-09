@@ -1,0 +1,10 @@
+impl,kernel,camera,n_projected,iter,gpu_ms
+cuda-3dgs-real,rasterize_2dgs,camA_minusZ,53671,0,43.011936
+cuda-3dgs-real,rasterize_2dgs,camA_minusZ,53671,1,41.947842
+cuda-3dgs-real,rasterize_2dgs,camA_minusZ,53671,2,41.131680
+cuda-3dgs-real,rasterize_2dgs,camC_flipY,53671,0,37.425312
+cuda-3dgs-real,rasterize_2dgs,camC_flipY,53671,1,38.895233
+cuda-3dgs-real,rasterize_2dgs,camC_flipY,53671,2,37.569248
+cuda-3dgs-real,rasterize_2dgs,camD_roty180,53671,0,36.398239
+cuda-3dgs-real,rasterize_2dgs,camD_roty180,53671,1,36.446209
+cuda-3dgs-real,rasterize_2dgs,camD_roty180,53671,2,36.759998

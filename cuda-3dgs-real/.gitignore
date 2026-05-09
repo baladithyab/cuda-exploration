@@ -1,0 +1,9 @@
+# CUDA C++ binary (rebuild from source)
+rasterize
+
+# Rendered outputs (large, regenerate with run.sh)
+*.ppm
+
+# SASS dumps (regenerate with cuobjdump)
+rasterize.sass
+rasterize_kernel.sass

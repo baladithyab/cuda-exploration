@@ -128,3 +128,45 @@ Extended the Wave-9 pipeline to render a second, richer scene with
 - **Outputs**: `output_utsuho_plush.ppm` (= cam A), plus
   `output_utsuho_plush_{A,C,D}.ppm` per-camera. PNG at
   `/tmp/utsuho_plush.png`.
+
+## Wave 11: nvcc apples-to-apples comparison
+
+An nvcc CUDA-C++ reference (`cuda-3dgs-real/`) was built as an
+algorithm-equivalent port of this folder's Rust-kernel pipeline: same
+PLY parser, same per-gaussian projection math, same 4 cameras, same
+scene, same kernel body. Purpose: quantify cuda-oxide overhead on a
+non-trivial real-data kernel.
+
+**Pixel-level:** camera A and camera C produce **byte-identical
+PPM outputs** between cuda-oxide and nvcc. Camera D differs at
+3 pixels out of 640,000 by 1 intensity level — consistent with
+host-side float non-associativity (clang-17 vs rustc LLVM reorder
+some FMAs so the final u8-quantized value crosses a boundary at 3
+pixels). No algorithmic drift.
+
+**SASS (device kernel only):** identical arithmetic mix —
+FFMA=9 FMUL=9 FADD=5 MUFU=1, LDG.E total=9. **The only difference
+is `LDG.E.CONSTANT` (nvcc, 9×) vs plain `LDG.E` (cuda-oxide, 9×)**,
+reproducing the Wave-5 uniform-load-hint finding. Kernel section:
+270 SASS lines (nvcc) vs 277 (cuda-oxide).
+
+**Kernel timing (median of 3 iters, 800×800, N=53,671, user gaming
+on GPU during run so noise is elevated):**
+
+| Camera | oxide | nvcc | nvcc/oxide |
+|---|---|---|---|
+| A | 37.14 ms | 41.95 ms | 1.13× |
+| C | 37.78 ms | 37.57 ms | 0.99× |
+| D | 42.04 ms | 36.45 ms | 0.87× |
+
+Within ±15 %, no consistent winner. The `LDG.E.CONSTANT` hint
+nvcc emits does not translate to a measurable wall-clock delta on
+this kernel — loads are already coalesced, the math-to-load ratio
+is balanced, and the L1/TEX path absorbs the "not-flagged-uniform"
+penalty without a visible cost at this N.
+
+**Verdict:** on this 3DGS rasterize kernel, cuda-oxide is effectively
+tied with nvcc at both the SASS and runtime level. The matmul-scale
+codegen gap does not generalize to front-to-back alpha-blend splat
+rasterization, consistent with Wave-4-6's "algorithm class matters
+more than language" finding.
