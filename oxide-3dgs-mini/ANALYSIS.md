@@ -145,3 +145,39 @@ type-system hassles, no missing intrinsic. The notable findings:
 
 No build issues, no runtime issues, output looks plausible visually
 (see `output.ppm`).
+
+## Scene quality (Wave 8.5)
+
+The Wave 8 test scene was 512 gaussians with uniformly random position, size,
+color, and depth — this produced a convincing but uninterpretable pastel-noise
+image. It validated the pipeline but didn't show that the rasterizer can
+actually render a structured image. Wave 8.5 replaces the random generator
+with two procedural scenes that make the output unambiguously recognizable:
+
+- **`output_rings.ppm`** — 4096 gaussians arranged on 16 concentric rings
+  around (128, 128), radius 8–120, hue varying with radius (rainbow). σ=4–6,
+  opacity 0.7–0.9, depth = −radius so innermost rings render frontmost under
+  the kernel's front-to-back / transmittance-early-exit blend (first gaussian
+  in the array = frontmost).
+
+- **`output_smiley.ppm`** — ~6025 gaussians: sky-blue background on a 55×55
+  jittered grid (σ=12, opacity 0.3, depth −1 = backmost), a yellow face disk
+  of 2000 gaussians inside radius 80 (σ=6, opacity 0.85, depth −100), two
+  black eye disks at (104, 108) and (152, 108) (250 gaussians each), and a
+  500-gaussian black mouth on the lower half of a radius-30 arc. Eyes and
+  mouth use depth −1000 so they occlude the face.
+
+Depth sort is ASCENDING (smallest/most-negative first), matching the kernel's
+front-to-back convention: the gaussian at index 0 is drawn first into full
+transmittance; once transmittance drops below 1e-4 the loop early-exits.
+Swapping the sort direction produces a visibly broken smiley (background
+occluding the face), so this is a genuine functional check on the renderer's
+alpha-compositing order as well as a visual demo.
+
+No kernel changes; only the host-side gaussian array construction changed.
+Kernel timings with N=4096 (rings) are ~1.0 ms best / 1.7 ms median, and
+N=6025 (smiley) ~0.8 ms best / 2.1 ms median on the RTX 5090 box, similar
+to the Wave 8 N=512 numbers once you account for the ~10× more gaussians
+— i.e. the per-gaussian inner loop is cheap and the transmittance early
+exit is doing real work on the smiley (saturated-opacity central face +
+eyes short-circuit most of the inner loop for opaque pixels).
