@@ -62,6 +62,8 @@ Backends:
 
 ## Tiling speedup (median TFLOPS, tiled / naive)
 
+> **Caveat on apples-to-apples.** The `nvcc CUDA C++` row uses our hand-tuned 32×32 block + 4×4 register micro-tile (cuda-matmul-tiled), an aggressively optimized pattern. The `cuda-oxide` rows use a pure 16×16 shared-memory tile with 1 output element per thread (oxide-matmul-tiled). The 4-5× nvcc tiling ratio therefore measures *"best achievable tiled kernel per toolchain in this repo"*, not "same kernel, different compiler." We chose this because (a) cuda-oxide's `SharedArray` API is exercised at its current ergonomic surface, and (b) PTX inspection confirms the *compiler-level* gap independently: oxide-tiled emits 0 `fma.rn.f32` vs nvcc-tiled's 256, regardless of tile geometry. The honest summary is that cuda-oxide leaves multiplicative perf on the table for tiled kernels via missing FMA + missing K-loop unroll, and adding register tiling on top would only widen that gap until those codegen issues land.
+
 | backend | N=1024 | N=2048 | N=4096 |
 |---|---:|---:|---:|
 | nvcc CUDA C++ | 3.56× | 5.28× | 4.50× |
