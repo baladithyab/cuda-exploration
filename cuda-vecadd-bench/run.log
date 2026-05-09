@@ -1,0 +1,68 @@
+[cuda] device: NVIDIA GeForce RTX 5090 (sm_120)
+[cuda] N=1048576 vecadd f32, traffic=0.01 GB/iter
+[cuda] N=1048576 iter=0 gpu_ms=0.0103 GB/s=1221.17
+[cuda] N=1048576 iter=1 gpu_ms=0.0046 GB/s=2749.76
+[cuda] N=1048576 iter=2 gpu_ms=0.0100 GB/s=1260.31
+[cuda] N=1048576 iter=3 gpu_ms=0.0265 GB/s=474.33
+[cuda] N=1048576 iter=4 gpu_ms=0.0083 GB/s=1524.09
+[cuda] N=1048576 iter=5 gpu_ms=0.0181 GB/s=695.96
+[cuda] N=1048576 iter=6 gpu_ms=0.0066 GB/s=1918.13
+[cuda] N=1048576 iter=7 gpu_ms=0.0085 GB/s=1483.83
+[cuda] N=1048576 iter=8 gpu_ms=0.0059 GB/s=2137.04
+[cuda] N=1048576 iter=9 gpu_ms=0.0102 GB/s=1232.65
+[cuda] N=1048576 check idx=0 got=0.0000 want=0.0000 rel=0.000e+00 OK
+[cuda] N=1048576 check idx=524288 got=0.0800 want=0.0800 rel=0.000e+00 OK
+[cuda] N=1048576 check idx=1048575 got=0.0300 want=0.0300 rel=0.000e+00 OK
+[cuda] N=1048576 correctness: 3/3 OK
+[cuda] N=16777216 vecadd f32, traffic=0.20 GB/iter
+[cuda] N=16777216 iter=0 gpu_ms=0.1205 GB/s=1670.59
+[cuda] N=16777216 iter=1 gpu_ms=0.1141 GB/s=1763.79
+[cuda] N=16777216 iter=2 gpu_ms=0.1188 GB/s=1694.44
+[cuda] N=16777216 iter=3 gpu_ms=0.1203 GB/s=1674.15
+[cuda] N=16777216 iter=4 gpu_ms=0.2233 GB/s=901.48
+[cuda] N=16777216 iter=5 gpu_ms=0.1205 GB/s=1670.15
+[cuda] N=16777216 iter=6 gpu_ms=0.1212 GB/s=1661.77
+[cuda] N=16777216 iter=7 gpu_ms=0.1221 GB/s=1648.70
+[cuda] N=16777216 iter=8 gpu_ms=0.1267 GB/s=1589.15
+[cuda] N=16777216 iter=9 gpu_ms=0.1130 GB/s=1781.78
+[cuda] N=16777216 check idx=0 got=0.0000 want=0.0000 rel=0.000e+00 OK
+[cuda] N=16777216 check idx=8388608 got=0.1200 want=0.1200 rel=0.000e+00 OK
+[cuda] N=16777216 check idx=16777215 got=0.0400 want=0.0400 rel=0.000e+00 OK
+[cuda] N=16777216 correctness: 3/3 OK
+[cuda] N=67108864 vecadd f32, traffic=0.81 GB/iter
+[cuda] N=67108864 iter=0 gpu_ms=1.8900 GB/s=426.08
+[cuda] N=67108864 iter=1 gpu_ms=0.5013 GB/s=1606.40
+[cuda] N=67108864 iter=2 gpu_ms=0.7182 GB/s=1121.27
+[cuda] N=67108864 iter=3 gpu_ms=0.5169 GB/s=1558.06
+[cuda] N=67108864 iter=4 gpu_ms=2.2476 GB/s=358.29
+[cuda] N=67108864 iter=5 gpu_ms=0.5005 GB/s=1608.86
+[cuda] N=67108864 iter=6 gpu_ms=0.5137 GB/s=1567.67
+[cuda] N=67108864 iter=7 gpu_ms=0.8364 GB/s=962.77
+[cuda] N=67108864 iter=8 gpu_ms=1.8304 GB/s=439.95
+[cuda] N=67108864 iter=9 gpu_ms=0.7402 GB/s=1087.92
+[cuda] N=67108864 check idx=0 got=0.0000 want=0.0000 rel=0.000e+00 OK
+[cuda] N=67108864 check idx=33554432 got=0.1200 want=0.1200 rel=0.000e+00 OK
+[cuda] N=67108864 check idx=67108863 got=0.1100 want=0.1100 rel=0.000e+00 OK
+[cuda] N=67108864 correctness: 3/3 OK
+[cuda] N=268435456 vecadd f32, traffic=3.22 GB/iter
+[cuda] N=268435456 iter=0 gpu_ms=3.6635 GB/s=879.29
+[cuda] N=268435456 iter=1 gpu_ms=2.5007 GB/s=1288.11
+[cuda] N=268435456 iter=2 gpu_ms=3.8875 GB/s=828.61
+[cuda] N=268435456 iter=3 gpu_ms=3.5394 GB/s=910.10
+[cuda] N=268435456 iter=4 gpu_ms=4.5267 GB/s=711.61
+[cuda] N=268435456 iter=5 gpu_ms=4.2025 GB/s=766.50
+[cuda] N=268435456 iter=6 gpu_ms=2.3720 GB/s=1358.02
+[cuda] N=268435456 iter=7 gpu_ms=3.5805 GB/s=899.65
+[cuda] N=268435456 iter=8 gpu_ms=3.3058 GB/s=974.43
+[cuda] N=268435456 iter=9 gpu_ms=7.0686 GB/s=455.71
+[cuda] N=268435456 check idx=0 got=0.0000 want=0.0000 rel=0.000e+00 OK
+[cuda] N=268435456 check idx=134217728 got=0.0800 want=0.0800 rel=0.000e+00 OK
+[cuda] N=268435456 check idx=268435455 got=0.0300 want=0.0300 rel=0.000e+00 OK
+[cuda] N=268435456 correctness: 3/3 OK
+
+[cuda] ===== SUMMARY =====
+[cuda]          N     best_ms      med_ms    best_GBs     med_GBs
+[cuda]    1048576      0.0046      0.0092     2749.76     1362.97
+[cuda]   16777216      0.1130      0.1205     1781.78     1670.37
+[cuda]   67108864      0.5005      0.7292     1608.86     1104.35
+[cuda]  268435456      2.3720      3.6220     1358.02      889.35

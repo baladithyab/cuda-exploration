@@ -12,6 +12,7 @@ Cargo.lock.bak
 cuda-matmul/matmul
 cuda-matmul-tiled/matmul
 cublas-matmul/matmul
+cuda-vecadd-bench/vecadd
 
 # Editor / OS
 .DS_Store

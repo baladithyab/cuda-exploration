@@ -1,0 +1,121 @@
+=========================================
+RUSTC-CODEGEN-CUDA: oxide-vecadd-bench
+=========================================
+
+This is the proper cargo workflow:
+  RUSTFLAGS="-Z codegen-backend=..." cargo run
+
+Building and running oxide-vecadd-bench...
+
+   Compiling oxide-vecadd-bench v0.1.0 (/home/codeseys/cuda-oxide-bench/oxide-vecadd-bench)
+    Finished `release` profile [optimized] target(s) in 0.44s
+     Running `target/release/oxide-vecadd-bench`
+[oxide] vecadd 3-buffer streaming sweep [1048576, 16777216, 67108864, 268435456], 1 warmup + 10 iters
+---- N = 1048576 ----
+[oxide-safe] N=1048576 iter=0 gpu_ms=0.0060 GB/s=2091.57
+[oxide-safe] N=1048576 iter=1 gpu_ms=0.0089 GB/s=1414.45
+[oxide-safe] N=1048576 iter=2 gpu_ms=0.0079 GB/s=1591.97
+[oxide-safe] N=1048576 iter=3 gpu_ms=0.0042 GB/s=2978.91
+[oxide-safe] N=1048576 iter=4 gpu_ms=0.0101 GB/s=1248.30
+[oxide-safe] N=1048576 iter=5 gpu_ms=0.0100 GB/s=1264.36
+[oxide-safe] N=1048576 iter=6 gpu_ms=0.0074 GB/s=1694.90
+[oxide-safe] N=1048576 iter=7 gpu_ms=0.0085 GB/s=1472.72
+[oxide-safe] N=1048576 iter=8 gpu_ms=0.0076 GB/s=1645.26
+[oxide-safe] N=1048576 iter=9 gpu_ms=0.0091 GB/s=1379.71
+[oxide-safe] N=1048576 correctness 3/3  best=0.0042ms med=0.0082ms  (1530.02 GB/s median)
+[oxide-unchecked] N=1048576 iter=0 gpu_ms=0.0079 GB/s=1585.55
+[oxide-unchecked] N=1048576 iter=1 gpu_ms=0.0063 GB/s=1996.02
+[oxide-unchecked] N=1048576 iter=2 gpu_ms=0.0130 GB/s=966.13
+[oxide-unchecked] N=1048576 iter=3 gpu_ms=0.0088 GB/s=1424.70
+[oxide-unchecked] N=1048576 iter=4 gpu_ms=0.0075 GB/s=1673.26
+[oxide-unchecked] N=1048576 iter=5 gpu_ms=0.0081 GB/s=1554.21
+[oxide-unchecked] N=1048576 iter=6 gpu_ms=0.0102 GB/s=1236.53
+[oxide-unchecked] N=1048576 iter=7 gpu_ms=0.0093 GB/s=1355.92
+[oxide-unchecked] N=1048576 iter=8 gpu_ms=0.0118 GB/s=1062.75
+[oxide-unchecked] N=1048576 iter=9 gpu_ms=0.0087 GB/s=1440.35
+[oxide-unchecked] N=1048576 correctness 3/3  best=0.0063ms med=0.0088ms  (1432.48 GB/s median)
+
+---- N = 16777216 ----
+[oxide-safe] N=16777216 iter=0 gpu_ms=0.1155 GB/s=1743.75
+[oxide-safe] N=16777216 iter=1 gpu_ms=0.1083 GB/s=1858.63
+[oxide-safe] N=16777216 iter=2 gpu_ms=0.1251 GB/s=1609.07
+[oxide-safe] N=16777216 iter=3 gpu_ms=0.1133 GB/s=1776.75
+[oxide-safe] N=16777216 iter=4 gpu_ms=0.1151 GB/s=1749.57
+[oxide-safe] N=16777216 iter=5 gpu_ms=0.1683 GB/s=1196.55
+[oxide-safe] N=16777216 iter=6 gpu_ms=0.1167 GB/s=1724.63
+[oxide-safe] N=16777216 iter=7 gpu_ms=0.1220 GB/s=1650.00
+[oxide-safe] N=16777216 iter=8 gpu_ms=0.1217 GB/s=1653.91
+[oxide-safe] N=16777216 iter=9 gpu_ms=0.1500 GB/s=1342.03
+[oxide-safe] N=16777216 correctness 3/3  best=0.1083ms med=0.1192ms  (1688.53 GB/s median)
+[oxide-unchecked] N=16777216 iter=0 gpu_ms=0.1108 GB/s=1816.76
+[oxide-unchecked] N=16777216 iter=1 gpu_ms=0.1148 GB/s=1753.47
+[oxide-unchecked] N=16777216 iter=2 gpu_ms=0.1125 GB/s=1789.89
+[oxide-unchecked] N=16777216 iter=3 gpu_ms=0.3238 GB/s=621.75
+[oxide-unchecked] N=16777216 iter=4 gpu_ms=0.1136 GB/s=1772.74
+[oxide-unchecked] N=16777216 iter=5 gpu_ms=0.1213 GB/s=1659.58
+[oxide-unchecked] N=16777216 iter=6 gpu_ms=0.1141 GB/s=1763.79
+[oxide-unchecked] N=16777216 iter=7 gpu_ms=0.1157 GB/s=1740.38
+[oxide-unchecked] N=16777216 iter=8 gpu_ms=0.1164 GB/s=1729.37
+[oxide-unchecked] N=16777216 iter=9 gpu_ms=0.7808 GB/s=257.86
+[oxide-unchecked] N=16777216 correctness 3/3  best=0.1108ms med=0.1152ms  (1746.90 GB/s median)
+
+---- N = 67108864 ----
+[oxide-safe] N=67108864 iter=0 gpu_ms=0.5798 GB/s=1389.00
+[oxide-safe] N=67108864 iter=1 gpu_ms=0.5930 GB/s=1358.04
+[oxide-safe] N=67108864 iter=2 gpu_ms=0.5059 GB/s=1591.97
+[oxide-safe] N=67108864 iter=3 gpu_ms=1.7844 GB/s=451.29
+[oxide-safe] N=67108864 iter=4 gpu_ms=0.5008 GB/s=1608.04
+[oxide-safe] N=67108864 iter=5 gpu_ms=0.7068 GB/s=1139.45
+[oxide-safe] N=67108864 iter=6 gpu_ms=0.5190 GB/s=1551.72
+[oxide-safe] N=67108864 iter=7 gpu_ms=1.9924 GB/s=404.20
+[oxide-safe] N=67108864 iter=8 gpu_ms=0.7156 GB/s=1125.43
+[oxide-safe] N=67108864 iter=9 gpu_ms=0.6051 GB/s=1330.89
+[oxide-safe] N=67108864 correctness 3/3  best=0.5008ms med=0.5990ms  (1344.33 GB/s median)
+[oxide-unchecked] N=67108864 iter=0 gpu_ms=1.7603 GB/s=457.49
+[oxide-unchecked] N=67108864 iter=1 gpu_ms=0.7176 GB/s=1122.27
+[oxide-unchecked] N=67108864 iter=2 gpu_ms=0.8227 GB/s=978.91
+[oxide-unchecked] N=67108864 iter=3 gpu_ms=1.7682 GB/s=455.43
+[oxide-unchecked] N=67108864 iter=4 gpu_ms=0.7145 GB/s=1127.15
+[oxide-unchecked] N=67108864 iter=5 gpu_ms=1.8775 GB/s=428.93
+[oxide-unchecked] N=67108864 iter=6 gpu_ms=0.9056 GB/s=889.25
+[oxide-unchecked] N=67108864 iter=7 gpu_ms=1.7673 GB/s=455.68
+[oxide-unchecked] N=67108864 iter=8 gpu_ms=0.7179 GB/s=1121.77
+[oxide-unchecked] N=67108864 iter=9 gpu_ms=0.5622 GB/s=1432.32
+[oxide-unchecked] N=67108864 correctness 3/3  best=0.5622ms med=0.8641ms  (931.93 GB/s median)
+
+---- N = 268435456 ----
+[oxide-safe] N=268435456 iter=0 gpu_ms=6.9033 GB/s=466.62
+[oxide-safe] N=268435456 iter=1 gpu_ms=2.5717 GB/s=1252.58
+[oxide-safe] N=268435456 iter=2 gpu_ms=3.6728 GB/s=877.06
+[oxide-safe] N=268435456 iter=3 gpu_ms=2.0812 GB/s=1547.74
+[oxide-safe] N=268435456 iter=4 gpu_ms=4.0249 GB/s=800.33
+[oxide-safe] N=268435456 iter=5 gpu_ms=2.3593 GB/s=1365.35
+[oxide-safe] N=268435456 iter=6 gpu_ms=2.3791 GB/s=1353.95
+[oxide-safe] N=268435456 iter=7 gpu_ms=4.5428 GB/s=709.08
+[oxide-safe] N=268435456 iter=8 gpu_ms=4.3845 GB/s=734.68
+[oxide-safe] N=268435456 iter=9 gpu_ms=3.1220 GB/s=1031.77
+[oxide-safe] N=268435456 correctness 3/3  best=2.0812ms med=3.3974ms  (948.14 GB/s median)
+[oxide-unchecked] N=268435456 iter=0 gpu_ms=6.1357 GB/s=525.00
+[oxide-unchecked] N=268435456 iter=1 gpu_ms=4.0623 GB/s=792.96
+[oxide-unchecked] N=268435456 iter=2 gpu_ms=4.6811 GB/s=688.14
+[oxide-unchecked] N=268435456 iter=3 gpu_ms=4.5976 GB/s=700.63
+[oxide-unchecked] N=268435456 iter=4 gpu_ms=5.9686 GB/s=539.69
+[oxide-unchecked] N=268435456 iter=5 gpu_ms=6.1252 GB/s=525.90
+[oxide-unchecked] N=268435456 iter=6 gpu_ms=5.3249 GB/s=604.94
+[oxide-unchecked] N=268435456 iter=7 gpu_ms=4.7736 GB/s=674.80
+[oxide-unchecked] N=268435456 iter=8 gpu_ms=3.1708 GB/s=1015.89
+[oxide-unchecked] N=268435456 iter=9 gpu_ms=3.9641 GB/s=812.59
+[oxide-unchecked] N=268435456 correctness 3/3  best=3.1708ms med=4.7273ms  (681.40 GB/s median)
+
+================== SUMMARY ==================
+kernel                N  best_gpu_ms   med_gpu_ms   best_GBs    med_GBs
+------------------------------------------------------------------------
+safe            1048576       0.0042       0.0082    2978.91    1530.02
+unchecked       1048576       0.0063       0.0088    1996.02    1432.48
+safe           16777216       0.1083       0.1192    1858.63    1688.53
+unchecked      16777216       0.1108       0.1152    1816.76    1746.90
+safe           67108864       0.5008       0.5990    1608.04    1344.33
+unchecked      67108864       0.5622       0.8641    1432.32     931.93
+safe          268435456       2.0812       3.3974    1547.74     948.14
+unchecked     268435456       3.1708       4.7273    1015.89     681.40
+=============================================
