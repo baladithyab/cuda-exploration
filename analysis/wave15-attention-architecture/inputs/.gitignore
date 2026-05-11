@@ -1,0 +1,3 @@
+# Wave 15 attention inputs — regenerable, not tracked in git
+*.npy
+

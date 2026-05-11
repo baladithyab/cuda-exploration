@@ -1,0 +1,3 @@
+# also: don't track python caches in this dir tree
+__pycache__/
+*.pyc
