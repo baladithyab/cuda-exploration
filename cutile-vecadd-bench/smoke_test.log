@@ -1,0 +1,15 @@
+cupy version: 14.0.1
+cupy CUDA runtime: 13000
+device 0 name: NVIDIA GeForce RTX 5090
+device 0 compute capability: sm_120
+cuda.tile module: <module 'cuda.tile' from '/home/codeseys/cuda-oxide-bench/cutile-vecadd/.venv/lib/python3.12/site-packages/cuda/tile/__init__.py'>
+cuda.tile public API (first 30): ['Array', 'ByTarget', 'Constant', 'ConstantAnnotation', 'DType', 'MemoryOrder', 'MemoryScope', 'PaddingMode', 'RoundingMode', 'Scalar', 'Tile', 'TileCompilerExecutionError', 'TileCompilerTimeoutError', 'TileError', 'TileInternalError', 'TileRecursionError', 'TileStaticAssertionError', 'TileStaticEvalError', 'TileSyntaxError', 'TileTypeError', 'TileUnsupportedFeatureError', 'TileValueError', 'TiledView', 'abs', 'add', 'arange', 'argmax', 'argmin', 'assert_', 'astype']
+
+Launching vector_add_kernel: N=1048576, TILE_SIZE=16, grid=65536
+first launch wall time (incl JIT compile): 639.29 ms
+correctness: OK  (max abs err = 0.00e+00)
+
+timed 10 iters (cudaEvent): best=0.0332 ms median=0.0340 ms
+effective bandwidth: best=378.5 GB/s median=370.6 GB/s (HBM peak ~1792 GB/s on RTX 5090)
+
+smoke test PASSED

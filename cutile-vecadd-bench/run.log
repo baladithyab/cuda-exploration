@@ -1,0 +1,98 @@
+cuda-tile version: 1.3.0
+cupy: 14.0.1
+device: NVIDIA GeForce RTX 5090
+compute capability: sm_120
+sizes: [1048576, 16777216, 67108864, 268435456]
+warmup: 1, iters: 10
+
+[cutile-tile256] N=1048576 iter=0 gpu_ms=0.0435 GB/s=289.56
+[cutile-tile256] N=1048576 iter=1 gpu_ms=0.0061 GB/s=2058.72
+[cutile-tile256] N=1048576 iter=2 gpu_ms=0.0045 GB/s=2769.13
+[cutile-tile256] N=1048576 iter=3 gpu_ms=0.0056 GB/s=2246.95
+[cutile-tile256] N=1048576 iter=4 gpu_ms=0.0069 GB/s=1820.44
+[cutile-tile256] N=1048576 iter=5 gpu_ms=0.0060 GB/s=2114.06
+[cutile-tile256] N=1048576 iter=6 gpu_ms=0.0053 GB/s=2354.59
+[cutile-tile256] N=1048576 iter=7 gpu_ms=0.0122 GB/s=1032.06
+[cutile-tile256] N=1048576 iter=8 gpu_ms=0.0045 GB/s=2788.77
+[cutile-tile256] N=1048576 iter=9 gpu_ms=0.0060 GB/s=2102.76
+[cutile-tile256] N=1048576 correctness OK  best=0.0045ms med=0.0060ms (2108.40 GB/s median)
+[cutile-tile256] N=16777216 iter=0 gpu_ms=0.1603 GB/s=1255.78
+[cutile-tile256] N=16777216 iter=1 gpu_ms=0.1408 GB/s=1429.88
+[cutile-tile256] N=16777216 iter=2 gpu_ms=0.1134 GB/s=1775.74
+[cutile-tile256] N=16777216 iter=3 gpu_ms=0.1128 GB/s=1784.81
+[cutile-tile256] N=16777216 iter=4 gpu_ms=0.1135 GB/s=1773.74
+[cutile-tile256] N=16777216 iter=5 gpu_ms=0.1057 GB/s=1904.19
+[cutile-tile256] N=16777216 iter=6 gpu_ms=0.1180 GB/s=1705.46
+[cutile-tile256] N=16777216 iter=7 gpu_ms=0.1338 GB/s=1505.13
+[cutile-tile256] N=16777216 iter=8 gpu_ms=0.1188 GB/s=1695.35
+[cutile-tile256] N=16777216 iter=9 gpu_ms=0.1197 GB/s=1681.31
+[cutile-tile256] N=16777216 correctness OK  best=0.1057ms med=0.1184ms (1700.39 GB/s median)
+[cutile-tile256] N=67108864 iter=0 gpu_ms=0.5590 GB/s=1440.52
+[cutile-tile256] N=67108864 iter=1 gpu_ms=0.5315 GB/s=1515.28
+[cutile-tile256] N=67108864 iter=2 gpu_ms=0.5275 GB/s=1526.77
+[cutile-tile256] N=67108864 iter=3 gpu_ms=0.5246 GB/s=1535.06
+[cutile-tile256] N=67108864 iter=4 gpu_ms=0.5164 GB/s=1559.32
+[cutile-tile256] N=67108864 iter=5 gpu_ms=0.5194 GB/s=1550.38
+[cutile-tile256] N=67108864 iter=6 gpu_ms=0.5161 GB/s=1560.48
+[cutile-tile256] N=67108864 iter=7 gpu_ms=0.5115 GB/s=1574.44
+[cutile-tile256] N=67108864 iter=8 gpu_ms=0.5112 GB/s=1575.23
+[cutile-tile256] N=67108864 iter=9 gpu_ms=0.5130 GB/s=1569.82
+[cutile-tile256] N=67108864 correctness OK  best=0.5112ms med=0.5179ms (1554.84 GB/s median)
+[cutile-tile256] N=268435456 iter=0 gpu_ms=2.0851 GB/s=1544.89
+[cutile-tile256] N=268435456 iter=1 gpu_ms=2.0583 GB/s=1564.99
+[cutile-tile256] N=268435456 iter=2 gpu_ms=2.1024 GB/s=1532.14
+[cutile-tile256] N=268435456 iter=3 gpu_ms=2.0493 GB/s=1571.83
+[cutile-tile256] N=268435456 iter=4 gpu_ms=2.0572 GB/s=1565.79
+[cutile-tile256] N=268435456 iter=5 gpu_ms=2.0731 GB/s=1553.83
+[cutile-tile256] N=268435456 iter=6 gpu_ms=2.0464 GB/s=1574.12
+[cutile-tile256] N=268435456 iter=7 gpu_ms=2.0582 GB/s=1565.09
+[cutile-tile256] N=268435456 iter=8 gpu_ms=2.3141 GB/s=1392.01
+[cutile-tile256] N=268435456 iter=9 gpu_ms=2.5834 GB/s=1246.88
+[cutile-tile256] N=268435456 correctness OK  best=2.0464ms med=2.0657ms (1559.39 GB/s median)
+
+[cutile-tile1024] N=1048576 iter=0 gpu_ms=0.0360 GB/s=349.21
+[cutile-tile1024] N=1048576 iter=1 gpu_ms=0.0248 GB/s=507.38
+[cutile-tile1024] N=1048576 iter=2 gpu_ms=0.0053 GB/s=2383.13
+[cutile-tile1024] N=1048576 iter=3 gpu_ms=0.0056 GB/s=2259.86
+[cutile-tile1024] N=1048576 iter=4 gpu_ms=0.0071 GB/s=1763.30
+[cutile-tile1024] N=1048576 iter=5 gpu_ms=0.0252 GB/s=500.27
+[cutile-tile1024] N=1048576 iter=6 gpu_ms=0.0043 GB/s=2956.51
+[cutile-tile1024] N=1048576 iter=7 gpu_ms=0.0052 GB/s=2412.37
+[cutile-tile1024] N=1048576 iter=8 gpu_ms=0.0070 GB/s=1803.74
+[cutile-tile1024] N=1048576 iter=9 gpu_ms=0.0053 GB/s=2354.59
+[cutile-tile1024] N=1048576 correctness OK  best=0.0043ms med=0.0063ms (2006.20 GB/s median)
+[cutile-tile1024] N=16777216 iter=0 gpu_ms=0.1173 GB/s=1716.63
+[cutile-tile1024] N=16777216 iter=1 gpu_ms=0.1336 GB/s=1506.57
+[cutile-tile1024] N=16777216 iter=2 gpu_ms=0.1132 GB/s=1778.75
+[cutile-tile1024] N=16777216 iter=3 gpu_ms=0.1048 GB/s=1920.47
+[cutile-tile1024] N=16777216 iter=4 gpu_ms=0.1197 GB/s=1681.76
+[cutile-tile1024] N=16777216 iter=5 gpu_ms=0.1119 GB/s=1799.10
+[cutile-tile1024] N=16777216 iter=6 gpu_ms=0.1176 GB/s=1711.96
+[cutile-tile1024] N=16777216 iter=7 gpu_ms=0.1339 GB/s=1504.05
+[cutile-tile1024] N=16777216 iter=8 gpu_ms=0.1185 GB/s=1699.47
+[cutile-tile1024] N=16777216 iter=9 gpu_ms=0.1346 GB/s=1495.83
+[cutile-tile1024] N=16777216 correctness OK  best=0.1048ms med=0.1180ms (1705.69 GB/s median)
+[cutile-tile1024] N=67108864 iter=0 gpu_ms=0.5632 GB/s=1429.96
+[cutile-tile1024] N=67108864 iter=1 gpu_ms=0.5172 GB/s=1557.00
+[cutile-tile1024] N=67108864 iter=2 gpu_ms=0.5124 GB/s=1571.78
+[cutile-tile1024] N=67108864 iter=3 gpu_ms=0.5018 GB/s=1604.76
+[cutile-tile1024] N=67108864 iter=4 gpu_ms=0.5200 GB/s=1548.76
+[cutile-tile1024] N=67108864 iter=5 gpu_ms=0.5240 GB/s=1536.84
+[cutile-tile1024] N=67108864 iter=6 gpu_ms=0.5184 GB/s=1553.54
+[cutile-tile1024] N=67108864 iter=7 gpu_ms=0.5180 GB/s=1554.69
+[cutile-tile1024] N=67108864 iter=8 gpu_ms=0.5165 GB/s=1559.22
+[cutile-tile1024] N=67108864 iter=9 gpu_ms=0.5189 GB/s=1551.91
+[cutile-tile1024] N=67108864 correctness OK  best=0.5018ms med=0.5182ms (1554.12 GB/s median)
+[cutile-tile1024] N=268435456 iter=0 gpu_ms=2.0880 GB/s=1542.71
+[cutile-tile1024] N=268435456 iter=1 gpu_ms=2.0385 GB/s=1580.20
+[cutile-tile1024] N=268435456 iter=2 gpu_ms=2.0514 GB/s=1570.26
+[cutile-tile1024] N=268435456 iter=3 gpu_ms=2.5590 GB/s=1258.76
+[cutile-tile1024] N=268435456 iter=4 gpu_ms=2.1555 GB/s=1494.45
+[cutile-tile1024] N=268435456 iter=5 gpu_ms=2.0505 GB/s=1570.97
+[cutile-tile1024] N=268435456 iter=6 gpu_ms=2.0653 GB/s=1559.66
+[cutile-tile1024] N=268435456 iter=7 gpu_ms=2.8099 GB/s=1146.39
+[cutile-tile1024] N=268435456 iter=8 gpu_ms=2.0652 GB/s=1559.75
+[cutile-tile1024] N=268435456 iter=9 gpu_ms=2.0559 GB/s=1566.79
+[cutile-tile1024] N=268435456 correctness OK  best=2.0385ms med=2.0653ms (1559.70 GB/s median)
+
+Results written to results.csv
