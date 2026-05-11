@@ -1,6 +1,64 @@
 # cuda-oxide-bench
 
-A fair-comparison benchmark of [**cuda-oxide**](https://github.com/NVlabs/cuda-oxide) — NVIDIA's brand-new Rust-to-PTX compiler (v0.1.0, released 2026-05-07) — against raw **CUDA C++** (nvcc) and **wgpu/WGSL**, running the identical naive 4096×4096 f32 matrix-multiply algorithm on an RTX 5090 (Blackwell, sm_120) under WSL2. The goal is not to crown a winner, but to quantify how much performance a Rust-first CUDA frontend costs today, where the cost comes from, and where it matches or closes on the C++ baseline. Every kernel implements the same inner loop (`for k in 0..dim: C[r,c] += A[r,k] * B[k,c]`) with the same 16×16 thread block; no shared-memory tiling, no Tensor Cores, no cuBLAS — just the compiler and the driver.
+A fair-comparison benchmark of multiple GPU compute frontends on **RTX 5090 (Blackwell sm_120)**:
+[**cuda-oxide**](https://github.com/NVlabs/cuda-oxide) (Rust → PTX, v0.1.0),
+[**cuTile**](https://github.com/nvidia/cutile-python) (Python tile DSL, v1.3.0),
+**CUDA C++** (nvcc 13.2), and **cuBLAS** — across vector add, parallel reduction,
+matrix multiply (naive / tiled / mixed-precision), and a real-data 3D Gaussian
+Splatting forward rasterizer.
+
+The goal is not to crown a winner, but to quantify each frontend's strengths
+and limitations with **per-kernel SASS evidence**: where does the compiler do
+its best work? Where does it leave performance on the table? Where does
+algorithm geometry matter more than language choice?
+
+## Wave 12-14 (May 2026): cuTile multi-kernel comparison
+
+Latest waves added the cuTile axis (NVIDIA's Python tile DSL) and cuBLAS half-precision baselines. Headline @ N=4096:
+
+### Memory-bound (parity within 1%, except cuTile reduction wins)
+
+| impl | vec-add 256M (GB/s) | reduce_sum 256M (GB/s) |
+|---|---:|---:|
+| nvcc | 1568 | 1522 |
+| cuda-oxide | 1573 | 1519 |
+| **cutile** | 1559 (99%) | **1696 (+11%)** ⚡ |
+
+cuTile wins reduction via TMA bulk loads (`UTMALDG.1D` × 7 in cuTile cubin, 0 in nvcc / oxide). Same FP work, different memory strategy. Verified at SASS level — see [`analysis/wave13-sass/REDUCTION_SASS_DIFF.md`](analysis/wave13-sass/REDUCTION_SASS_DIFF.md).
+
+### Compute-bound matmul (TFLOPS, the full picture)
+
+| impl | f32 (no TC) | f16 (TC) | bf16 (TC) | tf32 (TC) |
+|---|---:|---:|---:|---:|
+| **cuBLAS** | 73.6 (sgemm) / 104.2 (tf32-mode) | **218.4** (hgemm) | **219.2** (bgemm) | 104.2 |
+| cuda-oxide | 45.0 (microtile) | (no TC API) | (no TC API) | (no TC API) |
+| **cutile** | 8.7 ⚠️ | **172.5** (79% of cuBLAS) | 159.8 | 84.0 |
+| nvcc | 38.4 (tiled) | — | — | — |
+
+**Three findings that reframe the headline:**
+
+1. **cuTile mixed-precision is real and competitive**: 172.5 TF f16 = 79% of cuBLAS hgemm. Tensor cores engage correctly via `ct.mma` at f16/bf16/tf32 — verified by HMMA instruction counts in SASS. See [`results/wave13-summary.md`](results/wave13-summary.md), [`results/wave14-summary.md`](results/wave14-summary.md), [`cutile-matmul-tiled-mixed/ANALYSIS.md`](cutile-matmul-tiled-mixed/ANALYSIS.md).
+2. **cuTile's f32 path is slow but the test was a category error.** Blackwell consumer hardware has NO f32 MMA. Calling `ct.mma` on f32 inputs falls back to scalar FMUL+FADD with no FFMA fusion (the latter is a real bug — drafted upstream issue at [`docs/upstream-issues/01-ctmma-f32-no-ffma-fusion.md`](docs/upstream-issues/01-ctmma-f32-no-ffma-fusion.md)).
+3. **cuda-oxide v0.1.0 has no usable TC API on consumer Blackwell.** The 45 TFLOPS f32 microtile is the cuda-oxide ceiling on RTX 5090 today. Source-verified: zero `mma.sync` instructions, only Hopper-only `wgmma` (placeholder!) and datacenter-only `tcgen05` modules. See [`analysis/wave14-oxide-tc-investigation/REPORT.md`](analysis/wave14-oxide-tc-investigation/REPORT.md).
+
+### What the user-facing read becomes
+
+If you're choosing a Python-first / Rust-first GPU compute frontend on Blackwell **today** (May 2026):
+
+- **Half-precision matmul** → cuTile with `ct.mma`(f16/bf16/tf32, f32 acc). 79% of cuBLAS, one Python decorator.
+- **f32 matmul peak** → cuBLAS sgemm with TF32 mode (104 TF) or pedantic IEEE (74 TF).
+- **Reduction-pattern memory work** → cuTile (`ct.sum` lowers to TMA bulk loads).
+- **Vec-add / streaming memory** → any of the three; parity within 1%.
+- **Naive (no-TC) matmul or non-trivial Rust kernels (3DGS, etc.)** → cuda-oxide.
+- **Bit-exact f32 with no MMA** → cuda-oxide register-microtile (45 TF) or cuBLAS pedantic.
+
+Per-wave details: [Wave 12 SUMMARY](results/wave12-summary.md) (cuTile axis added), [Wave 13](results/wave13-summary.md) (dtype falsification + SASS), [Wave 14](results/wave14-summary.md) (cuBLAS half-precision + cuda-oxide TC verdict).
+
+---
+
+## Wave 1-11 archive (the cuda-oxide vs nvcc f32 deep-dive)
+
+The original waves explored cuda-oxide v0.1.0 vs nvcc CUDA C++ at f32 in detail. **Note**: the headline numbers below were measured May 9 and have since been re-run on idle GPU during Wave 12 — the re-run numbers (in `results/wave12-summary.md`) supersede these. The original Wave 1-11 narrative remains accurate for the f32 cuda-oxide-vs-nvcc story.
 
 ## Headline results
 

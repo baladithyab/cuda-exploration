@@ -86,12 +86,32 @@ Vision: ship a comprehensive, third-party-citeable evaluation of NVlabs/cuda-oxi
 
 ## Out of scope (for now)
 
-- Tensor Core / WGMMA (requires the cuda-oxide `wgmma` API, ~50% of effort for marginal cross-comparison value vs cuBLAS GEMV/GEMM)
 - Multi-GPU
-- Mixed precision (fp16, bf16) — single-precision is the cleanest cross-stack comparison
+- ~~Mixed precision (fp16, bf16)~~ — **DONE** in Wave 13.1 (cuTile axis: f16/bf16/tf32 via ct.mma → tensor cores) and Wave 14.1 (cuBLAS hgemm/bgemm/sgemm-tf32 baselines)
+- ~~Tensor Core / WGMMA~~ — investigated in Wave 14.4: cuda-oxide v0.1.0 has no usable TC API on RTX 5090 sm_120 (wgmma is Hopper-only and stubbed; tcgen05 is datacenter-only). cuTile DOES expose TC via ct.mma, comparison documented.
 - Fixing wgpu on WSL — well-documented elsewhere; we already showed the limitation
 
-## Wave plan
+## Wave 12-14 status (May 2026, the cuTile axis)
+
+- ✅ **Wave 12.1**: cuTile vec-add bench, parity within 1% vs nvcc/oxide
+- ✅ **Wave 12.2**: cuTile reduction, +11% vs nvcc/oxide (TMA bulk loads)
+- ✅ **Wave 12.3**: cuTile naive matmul, broadcast-and-sum (4× slower than oxide naive)
+- ✅ **Wave 12.4**: cuTile tiled matmul via `ct.mma`, 7.57 TF f32 (Wave 13 reframed)
+- ✅ **Wave 13.1**: cuTile mixed-precision (f16/bf16/tf32), 172.5 TF f16 — TC engaged
+- ✅ **Wave 13.2**: SASS analysis explaining reduction win + matmul f32 fallback
+- ✅ **Wave 14.1**: cuBLAS hgemm/bgemm/sgemm-tf32 baselines for fair comparison
+- ✅ **Wave 14.2**: 2 upstream issue drafts at `docs/upstream-issues/`
+- ✅ **Wave 14.4**: cuda-oxide TC verdict — no usable TC API on consumer Blackwell
+
+### Wave 15+ candidates
+
+- [ ] **W15.1: file the upstream issues** at github.com/nvidia/cutile-python — drafts ready
+- [ ] **W15.2: per-N cuTile/cuBLAS ratio writeup** — does the 79% ratio hold at smaller N?
+- [ ] **W15.3: 3DGS rasterizer port to cuTile** — completeness alongside oxide and nvcc 3DGS
+- [ ] **W15.4: revisit when cuda-oxide ships `cuda_device::mma`** — track NVlabs/cuda-oxide releases
+- [ ] **G4-G7**: 3DGS deepening (SH3, tile-binning, larger scenes, backward pass)
+
+## Wave plan (legacy, original Wave 1-3 outline)
 
 - **Wave 1 (parallel, 2 subagents):** M1 + M2 — methodology fixes. Independent file ownership. Runs first because all later results depend on the new timing baseline.
 - **Wave 2 (parallel, 2 subagents):** F1+F2 (compiler gaps) + C1+C2 (broader axes). Some cross-talk on results format but file-disjoint.
