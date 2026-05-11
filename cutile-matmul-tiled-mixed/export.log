@@ -1,0 +1,24 @@
+cuda-tile version: 1.3.0
+cupy: 14.0.1
+device: NVIDIA GeForce RTX 5090
+compute capability: sm_120
+BM=128 BN=128 BK=16
+
+Exporting cubins…
+  wrote ./mma_f16xf16_f32acc.cubin  (187056 bytes)
+  wrote ./mma_bf16xbf16_f32acc.cubin  (189752 bytes)
+  wrote ./mma_tf32xtf32_f32acc.cubin  (200104 bytes)
+  wrote ./mma_f32xf32_f32acc.cubin  (413064 bytes)
+
+[mma_f16xf16_f32acc] N=512 tol=1e-02  max_abs=0.000e+00 rel=0.000e+00  OK
+[mma_bf16xbf16_f32acc] N=512 tol=3e-02  max_abs=0.000e+00 rel=0.000e+00  OK
+[mma_tf32xtf32_f32acc] N=512 tol=1e-03  max_abs=9.018e-03 rel=6.062e-05  OK
+[mma_f32xf32_f32acc] N=512 tol=1e-03  max_abs=6.104e-05 rel=4.103e-07  OK
+
+================================================
+  mma_f16xf16_f32acc: PASS  rel=0.000e+00
+  mma_bf16xbf16_f32acc: PASS  rel=0.000e+00
+  mma_tf32xtf32_f32acc: PASS  rel=6.062e-05
+  mma_f32xf32_f32acc: PASS  rel=4.103e-07
+================================================
+SMOKE TEST OK

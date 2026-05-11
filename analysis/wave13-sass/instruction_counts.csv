@@ -1,0 +1,8 @@
+sass_file,impl,kernel,FFMA,HMMA,BMMA,IMMA,TCGEN05,FADD,FMUL,HFMA2,SHFL,ATOM,BAR_SYNC,SYNCS,LDG_E,LDG_E_CONSTANT,LDG_128,LDG_64,LD_E,UTMALDG,LDL,LDS,LDS_128,STS,STS_128,STG,STL,BRA,IADD3,total_lines
+cutile_reduction,cutile,reduce_sum,0,0,0,0,0,18,0,1,7,1,8,10,0,0,0,0,0,7,0,4,2,3,0,0,0,12,0,489
+oxide_reduction,oxide,reduce_sum,0,0,0,0,0,12,0,2,8,3,1,0,0,0,0,0,3,0,0,2,0,1,0,0,0,7,0,217
+cuda_reduction,cuda,reduce_sum,0,0,0,0,0,9,0,2,8,0,1,0,1,1,0,0,0,0,0,1,0,1,0,0,0,3,0,169
+cutile_matmul_tiled,cutile,matmul_tiled,0,0,0,0,0,2176,2049,2,0,0,1,33,0,0,0,0,0,9,265,96,96,32,32,0,233,39,0,12169
+cutile_matmul_tiled_simple,cutile,matmul_tiled_simple,0,0,0,0,0,68,64,2,0,0,1,53,0,0,0,0,0,2,0,48,16,2,0,0,0,35,0,1097
+oxide_matmul_tiled_microtile,oxide,matmul_tiled_microtile,192,0,0,0,0,0,0,2,0,0,4,0,16,0,0,0,0,0,0,24,24,16,0,32,0,8,0,1278
+cuda_matmul_tiled,cuda,matmul_tiled,256,0,0,0,0,0,0,1,0,0,2,0,16,16,0,0,0,0,0,32,32,16,0,16,0,3,0,1049
