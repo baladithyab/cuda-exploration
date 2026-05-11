@@ -1,0 +1,177 @@
+[cublas-hp] device: NVIDIA GeForce RTX 5090 (sm_120)
+[cublas-hp] version: 13.4.0
+
+[cublas-hp] ===== variant: hgemm (f16 in/out, f32 accum (cublasGemmEx TENSOR_OP)) =====
+[cublas-hp] math mode: CUBLAS_DEFAULT_MATH (tensor cores enabled via GemmEx algo)
+[cublas-hp] N=1024 hgemm, 2.15 GFLOP/iter
+[cublas-hp] N=1024 hgemm iter=0 gpu_ms=0.029 tflops=73.263
+[cublas-hp] N=1024 hgemm iter=1 gpu_ms=0.058 tflops=37.179
+[cublas-hp] N=1024 hgemm iter=2 gpu_ms=0.018 tflops=117.529
+[cublas-hp] N=1024 hgemm iter=3 gpu_ms=0.018 tflops=119.624
+[cublas-hp] N=1024 hgemm iter=4 gpu_ms=0.018 tflops=118.358
+[cublas-hp] N=1024 hgemm iter=5 gpu_ms=0.018 tflops=121.795
+[cublas-hp] N=1024 hgemm iter=6 gpu_ms=0.017 tflops=127.826
+[cublas-hp] N=1024 hgemm iter=7 gpu_ms=0.017 tflops=128.561
+[cublas-hp] N=1024 hgemm iter=8 gpu_ms=0.018 tflops=117.529
+[cublas-hp] N=1024 hgemm iter=9 gpu_ms=0.031 tflops=69.113
+[cublas-hp] N=1024 hgemm check (0,0): got=1.5332 want=1.5333 rel=6.313e-05 OK
+[cublas-hp] N=1024 hgemm check (512,512): got=1.5381 want=1.5381 rel=9.068e-06 OK
+[cublas-hp] N=1024 hgemm check (1023,1023): got=1.5332 want=1.5336 rel=2.587e-04 OK
+[cublas-hp] N=1024 hgemm correctness: 3/3 OK (tol=1e-02)
+[cublas-hp] N=2048 hgemm, 17.18 GFLOP/iter
+[cublas-hp] N=2048 hgemm iter=0 gpu_ms=0.127 tflops=134.926
+[cublas-hp] N=2048 hgemm iter=1 gpu_ms=0.114 tflops=150.891
+[cublas-hp] N=2048 hgemm iter=2 gpu_ms=0.102 tflops=167.667
+[cublas-hp] N=2048 hgemm iter=3 gpu_ms=0.102 tflops=167.615
+[cublas-hp] N=2048 hgemm iter=4 gpu_ms=0.108 tflops=159.735
+[cublas-hp] N=2048 hgemm iter=5 gpu_ms=0.107 tflops=160.069
+[cublas-hp] N=2048 hgemm iter=6 gpu_ms=0.113 tflops=152.304
+[cublas-hp] N=2048 hgemm iter=7 gpu_ms=0.143 tflops=119.730
+[cublas-hp] N=2048 hgemm iter=8 gpu_ms=0.107 tflops=159.926
+[cublas-hp] N=2048 hgemm iter=9 gpu_ms=0.119 tflops=143.895
+[cublas-hp] N=2048 hgemm check (0,0): got=3.0684 want=3.0674 rel=3.128e-04 OK
+[cublas-hp] N=2048 hgemm check (1024,1024): got=3.0684 want=3.0686 rel=7.832e-05 OK
+[cublas-hp] N=2048 hgemm check (2047,2047): got=3.0723 want=3.0721 rel=5.401e-05 OK
+[cublas-hp] N=2048 hgemm correctness: 3/3 OK (tol=1e-02)
+[cublas-hp] N=4096 hgemm, 137.44 GFLOP/iter
+[cublas-hp] N=4096 hgemm iter=0 gpu_ms=0.645 tflops=212.970
+[cublas-hp] N=4096 hgemm iter=1 gpu_ms=0.637 tflops=215.806
+[cublas-hp] N=4096 hgemm iter=2 gpu_ms=0.651 tflops=211.045
+[cublas-hp] N=4096 hgemm iter=3 gpu_ms=0.663 tflops=207.306
+[cublas-hp] N=4096 hgemm iter=4 gpu_ms=0.657 tflops=209.174
+[cublas-hp] N=4096 hgemm iter=5 gpu_ms=0.659 tflops=208.514
+[cublas-hp] N=4096 hgemm iter=6 gpu_ms=0.636 tflops=216.219
+[cublas-hp] N=4096 hgemm iter=7 gpu_ms=0.629 tflops=218.407
+[cublas-hp] N=4096 hgemm iter=8 gpu_ms=0.648 tflops=212.034
+[cublas-hp] N=4096 hgemm iter=9 gpu_ms=0.636 tflops=216.251
+[cublas-hp] N=4096 hgemm check (0,0): got=6.1406 want=6.1420 rel=2.238e-04 OK
+[cublas-hp] N=4096 hgemm check (2048,2048): got=6.1445 want=6.1455 rel=1.576e-04 OK
+[cublas-hp] N=4096 hgemm check (4095,4095): got=6.1406 want=6.1392 rel=2.322e-04 OK
+[cublas-hp] N=4096 hgemm correctness: 3/3 OK (tol=1e-02)
+
+[cublas-hp] ===== variant: bgemm (bf16 in/out, f32 accum (cublasGemmEx TENSOR_OP)) =====
+[cublas-hp] math mode: CUBLAS_DEFAULT_MATH (tensor cores enabled via GemmEx algo)
+[cublas-hp] N=1024 bgemm, 2.15 GFLOP/iter
+[cublas-hp] N=1024 bgemm iter=0 gpu_ms=0.033 tflops=64.652
+[cublas-hp] N=1024 bgemm iter=1 gpu_ms=0.017 tflops=124.506
+[cublas-hp] N=1024 bgemm iter=2 gpu_ms=0.017 tflops=125.908
+[cublas-hp] N=1024 bgemm iter=3 gpu_ms=0.015 tflops=142.482
+[cublas-hp] N=1024 bgemm iter=4 gpu_ms=0.015 tflops=139.230
+[cublas-hp] N=1024 bgemm iter=5 gpu_ms=0.016 tflops=130.562
+[cublas-hp] N=1024 bgemm iter=6 gpu_ms=0.015 tflops=141.282
+[cublas-hp] N=1024 bgemm iter=7 gpu_ms=0.017 tflops=128.070
+[cublas-hp] N=1024 bgemm iter=8 gpu_ms=0.017 tflops=125.203
+[cublas-hp] N=1024 bgemm iter=9 gpu_ms=0.018 tflops=122.016
+[cublas-hp] N=1024 bgemm check (0,0): got=1.5312 want=1.5333 rel=1.337e-03 OK
+[cublas-hp] N=1024 bgemm check (512,512): got=1.5391 want=1.5381 rel=6.258e-04 OK
+[cublas-hp] N=1024 bgemm check (1023,1023): got=1.5391 want=1.5336 rel=3.562e-03 OK
+[cublas-hp] N=1024 bgemm correctness: 3/3 OK (tol=5e-02)
+[cublas-hp] N=2048 bgemm, 17.18 GFLOP/iter
+[cublas-hp] N=2048 bgemm iter=0 gpu_ms=0.120 tflops=142.709
+[cublas-hp] N=2048 bgemm iter=1 gpu_ms=0.101 tflops=170.003
+[cublas-hp] N=2048 bgemm iter=2 gpu_ms=0.101 tflops=170.706
+[cublas-hp] N=2048 bgemm iter=3 gpu_ms=0.134 tflops=128.684
+[cublas-hp] N=2048 bgemm iter=4 gpu_ms=0.102 tflops=168.509
+[cublas-hp] N=2048 bgemm iter=5 gpu_ms=0.130 tflops=132.072
+[cublas-hp] N=2048 bgemm iter=6 gpu_ms=0.102 tflops=167.930
+[cublas-hp] N=2048 bgemm iter=7 gpu_ms=0.107 tflops=160.596
+[cublas-hp] N=2048 bgemm iter=8 gpu_ms=0.102 tflops=168.880
+[cublas-hp] N=2048 bgemm iter=9 gpu_ms=0.109 tflops=156.934
+[cublas-hp] N=2048 bgemm check (0,0): got=3.0781 want=3.0674 rel=3.497e-03 OK
+[cublas-hp] N=2048 bgemm check (1024,1024): got=3.0781 want=3.0686 rel=3.104e-03 OK
+[cublas-hp] N=2048 bgemm check (2047,2047): got=3.0781 want=3.0721 rel=1.961e-03 OK
+[cublas-hp] N=2048 bgemm correctness: 3/3 OK (tol=5e-02)
+[cublas-hp] N=4096 bgemm, 137.44 GFLOP/iter
+[cublas-hp] N=4096 bgemm iter=0 gpu_ms=0.629 tflops=218.651
+[cublas-hp] N=4096 bgemm iter=1 gpu_ms=0.632 tflops=217.335
+[cublas-hp] N=4096 bgemm iter=2 gpu_ms=0.627 tflops=219.064
+[cublas-hp] N=4096 bgemm iter=3 gpu_ms=0.627 tflops=219.243
+[cublas-hp] N=4096 bgemm iter=4 gpu_ms=0.693 tflops=198.327
+[cublas-hp] N=4096 bgemm iter=5 gpu_ms=0.638 tflops=215.319
+[cublas-hp] N=4096 bgemm iter=6 gpu_ms=0.627 tflops=219.220
+[cublas-hp] N=4096 bgemm iter=7 gpu_ms=0.633 tflops=217.258
+[cublas-hp] N=4096 bgemm iter=8 gpu_ms=0.632 tflops=217.401
+[cublas-hp] N=4096 bgemm iter=9 gpu_ms=0.649 tflops=211.648
+[cublas-hp] N=4096 bgemm check (0,0): got=6.1562 want=6.1420 rel=2.320e-03 OK
+[cublas-hp] N=4096 bgemm check (2048,2048): got=6.1562 want=6.1455 rel=1.749e-03 OK
+[cublas-hp] N=4096 bgemm check (4095,4095): got=6.1562 want=6.1392 rel=2.777e-03 OK
+[cublas-hp] N=4096 bgemm correctness: 3/3 OK (tol=5e-02)
+
+[cublas-hp] ===== variant: sgemm_tf32 (f32 in/out, TF32 internal (cublasSgemm + TF32_TENSOR_OP_MATH)) =====
+[cublas-hp] math mode: CUBLAS_TF32_TENSOR_OP_MATH
+[cublas-hp] N=1024 sgemm_tf32, 2.15 GFLOP/iter
+[cublas-hp] N=1024 sgemm_tf32 iter=0 gpu_ms=0.059 tflops=36.452
+[cublas-hp] N=1024 sgemm_tf32 iter=1 gpu_ms=0.030 tflops=72.316
+[cublas-hp] N=1024 sgemm_tf32 iter=2 gpu_ms=0.030 tflops=71.851
+[cublas-hp] N=1024 sgemm_tf32 iter=3 gpu_ms=0.028 tflops=76.784
+[cublas-hp] N=1024 sgemm_tf32 iter=4 gpu_ms=0.027 tflops=78.398
+[cublas-hp] N=1024 sgemm_tf32 iter=5 gpu_ms=0.027 tflops=78.582
+[cublas-hp] N=1024 sgemm_tf32 iter=6 gpu_ms=0.027 tflops=78.674
+[cublas-hp] N=1024 sgemm_tf32 iter=7 gpu_ms=0.028 tflops=77.943
+[cublas-hp] N=1024 sgemm_tf32 iter=8 gpu_ms=0.028 tflops=77.137
+[cublas-hp] N=1024 sgemm_tf32 iter=9 gpu_ms=0.029 tflops=73.183
+[cublas-hp] N=1024 sgemm_tf32 check (0,0): got=1.5334 want=1.5333 rel=3.786e-05 OK
+[cublas-hp] N=1024 sgemm_tf32 check (512,512): got=1.5382 want=1.5381 rel=3.650e-05 OK
+[cublas-hp] N=1024 sgemm_tf32 check (1023,1023): got=1.5337 want=1.5336 rel=3.716e-05 OK
+[cublas-hp] N=1024 sgemm_tf32 correctness: 3/3 OK (tol=1e-03)
+[cublas-hp] N=2048 sgemm_tf32, 17.18 GFLOP/iter
+[cublas-hp] N=2048 sgemm_tf32 iter=0 gpu_ms=0.191 tflops=89.838
+[cublas-hp] N=2048 sgemm_tf32 iter=1 gpu_ms=0.196 tflops=87.868
+[cublas-hp] N=2048 sgemm_tf32 iter=2 gpu_ms=0.224 tflops=76.850
+[cublas-hp] N=2048 sgemm_tf32 iter=3 gpu_ms=0.193 tflops=88.915
+[cublas-hp] N=2048 sgemm_tf32 iter=4 gpu_ms=0.191 tflops=89.868
+[cublas-hp] N=2048 sgemm_tf32 iter=5 gpu_ms=0.193 tflops=89.152
+[cublas-hp] N=2048 sgemm_tf32 iter=6 gpu_ms=0.193 tflops=89.078
+[cublas-hp] N=2048 sgemm_tf32 iter=7 gpu_ms=0.192 tflops=89.270
+[cublas-hp] N=2048 sgemm_tf32 iter=8 gpu_ms=0.192 tflops=89.374
+[cublas-hp] N=2048 sgemm_tf32 iter=9 gpu_ms=0.193 tflops=88.930
+[cublas-hp] N=2048 sgemm_tf32 check (0,0): got=3.0675 want=3.0674 rel=3.109e-05 OK
+[cublas-hp] N=2048 sgemm_tf32 check (1024,1024): got=3.0687 want=3.0686 rel=3.240e-05 OK
+[cublas-hp] N=2048 sgemm_tf32 check (2047,2047): got=3.0722 want=3.0721 rel=3.112e-05 OK
+[cublas-hp] N=2048 sgemm_tf32 correctness: 3/3 OK (tol=1e-03)
+[cublas-hp] N=4096 sgemm_tf32, 137.44 GFLOP/iter
+[cublas-hp] N=4096 sgemm_tf32 iter=0 gpu_ms=1.352 tflops=101.661
+[cublas-hp] N=4096 sgemm_tf32 iter=1 gpu_ms=1.360 tflops=101.075
+[cublas-hp] N=4096 sgemm_tf32 iter=2 gpu_ms=1.322 tflops=103.979
+[cublas-hp] N=4096 sgemm_tf32 iter=3 gpu_ms=1.319 tflops=104.173
+[cublas-hp] N=4096 sgemm_tf32 iter=4 gpu_ms=1.319 tflops=104.221
+[cublas-hp] N=4096 sgemm_tf32 iter=5 gpu_ms=1.326 tflops=103.623
+[cublas-hp] N=4096 sgemm_tf32 iter=6 gpu_ms=1.319 tflops=104.179
+[cublas-hp] N=4096 sgemm_tf32 iter=7 gpu_ms=1.319 tflops=104.229
+[cublas-hp] N=4096 sgemm_tf32 iter=8 gpu_ms=1.546 tflops=88.895
+[cublas-hp] N=4096 sgemm_tf32 iter=9 gpu_ms=1.319 tflops=104.221
+[cublas-hp] N=4096 sgemm_tf32 check (0,0): got=6.1421 want=6.1420 rel=2.135e-05 OK
+[cublas-hp] N=4096 sgemm_tf32 check (2048,2048): got=6.1456 want=6.1455 rel=2.048e-05 OK
+[cublas-hp] N=4096 sgemm_tf32 check (4095,4095): got=6.1393 want=6.1392 rel=2.097e-05 OK
+[cublas-hp] N=4096 sgemm_tf32 correctness: 3/3 OK (tol=1e-03)
+
+[cublas-hp] ===== SUMMARY =====
+[cublas-hp] --- hgemm (f16 in/out, f32 accum (cublasGemmEx TENSOR_OP)) ---
+[cublas-hp]      N     best_ms   median_ms     best_TF   median_TF
+[cublas-hp]   1024       0.017       0.018     128.561     117.942
+[cublas-hp]   2048       0.102       0.110     167.667     155.931
+[cublas-hp]   4096       0.629       0.647     218.407     212.501
+[cublas-hp] hgemm correctness: 9/9 OK
+[cublas-hp] --- bgemm (bf16 in/out, f32 accum (cublasGemmEx TENSOR_OP)) ---
+[cublas-hp]      N     best_ms   median_ms     best_TF   median_TF
+[cublas-hp]   1024       0.015       0.017     142.482     126.980
+[cublas-hp]   2048       0.101       0.105     170.706     164.181
+[cublas-hp]   4096       0.627       0.632     219.243     217.368
+[cublas-hp] bgemm correctness: 9/9 OK
+[cublas-hp] --- sgemm_tf32 (f32 in/out, TF32 internal (cublasSgemm + TF32_TENSOR_OP_MATH)) ---
+[cublas-hp]      N     best_ms   median_ms     best_TF   median_TF
+[cublas-hp]   1024       0.027       0.028      78.674      76.960
+[cublas-hp]   2048       0.191       0.193      89.868      89.115
+[cublas-hp]   4096       1.319       1.321     104.229     104.076
+[cublas-hp] sgemm_tf32 correctness: 9/9 OK
+
+[cublas-hp] ===== N=4096 apples-to-apples (best TFLOPS) =====
+[cublas-hp] cublas hgemm       :   218.41 TF
+[cublas-hp] cublas bgemm       :   219.24 TF
+[cublas-hp] cublas sgemm-tf32  :   104.23 TF
+[cublas-hp] cuTile f16 (W13.1) :   172.50 TF
+[cublas-hp] cuTile bf16 (W13.1):   159.80 TF
+[cublas-hp] cuTile tf32 (W13.1):    84.00 TF
+[cublas-hp] cuTile/cublas hgemm:   79.0%
+[cublas-hp] cuTile/cublas bgemm:   72.9%
+[cublas-hp] cuTile/cublas tf32 :   80.6%
