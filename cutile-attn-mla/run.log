@@ -1,0 +1,40 @@
+cuda-tile version: 1.3.0
+cupy: 14.0.1
+device: NVIDIA GeForce RTX 5090
+compute capability: sm_120
+
+[bench] shape=deepseek_v3 B=1 S=2048 n_h=128 qk=192 d_v=128
+[bench] qk_head_dim=192 → qk_pad=256
+[bench] BLOCK_M=64 BLOCK_N=64
+[bench] iter=0 gpu_ms=3.120 tflops=110.119
+[bench] iter=1 gpu_ms=3.056 tflops=112.418
+[bench] iter=2 gpu_ms=3.334 tflops=103.067
+[bench] iter=3 gpu_ms=3.859 tflops=89.039
+[bench] iter=4 gpu_ms=3.540 tflops=97.048
+[bench] iter=5 gpu_ms=4.136 tflops=83.066
+[bench] iter=6 gpu_ms=3.066 tflops=112.080
+[bench] iter=7 gpu_ms=3.061 tflops=112.266
+[bench] iter=8 gpu_ms=3.290 tflops=104.450
+[bench] iter=9 gpu_ms=3.063 tflops=112.166
+
+================================================================
+ BENCH SUMMARY — deepseek_v3 (B=1 S=2048 n_h=128 qk=192 d_v=128)
+   BLOCK_M=64 BLOCK_N=64 QK_PAD=256 grid=(128, 32)
+   median : 3.290 ms   110.119 TFLOPS
+   best   : 3.056 ms   112.418 TFLOPS
+   cuBLAS hgemm peak (Wave 14.1) : 218 TFLOPS  → ratio 51.57%
+   cutile-attn-gqa (Wave 15.1)   : 165 TFLOPS  → ratio 68.13%
+================================================================
+
+
+=== cubin export for SASS inspection ===
+cuda-tile version: 1.3.0
+cupy: 14.0.1
+device: NVIDIA GeForce RTX 5090
+compute capability: sm_120
+
+Exporting cubin at bench shape for SASS inspection…
+  wrote mla_fwd_fused.cubin  (633232 bytes)
+SASS lines : 15929
+HMMA insts : 384
+MUFU.EX2   : 68 (softmax exp)

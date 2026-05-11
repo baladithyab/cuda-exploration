@@ -1,0 +1,23 @@
+[oxide-attn-gqa] Wave 16.1 — cuda-oxide GQA (f32, no-TC)
+[oxide-attn-gqa] GPU: RTX 5090 sm_120, 1 warmup + 10 timed iters
+[oxide-attn-gqa] shape=correctness (B=1 S=128 n_q=4 n_kv=2 d=64) scores_MB=0.3
+[oxide-attn-gqa] correctness correctness: max_abs=1.192e-7 max_rel=5.588e-3 (tight atol=0.00001 -> OK; loose atol=0.001 -> FAIL)
+[oxide-attn-gqa] correctness iter=0 total=0.034ms tflops=0.49
+[oxide-attn-gqa] correctness iter=1 total=0.021ms tflops=0.78
+[oxide-attn-gqa] correctness iter=2 total=0.020ms tflops=0.83
+[oxide-attn-gqa] correctness SUMMARY best=0.020ms (0.83 TF) median=0.021ms (0.78 TF)
+[oxide-attn-gqa] shape=llama3_8b (B=1 S=2048 n_q=32 n_kv=8 d=128) scores_MB=536.9
+[oxide-attn-gqa] llama3_8b correctness: max_abs=2.086e-7 max_rel=3.130e-2 (tight atol=0.00001 -> OK; loose atol=0.001 -> FAIL)
+[oxide-attn-gqa] llama3_8b iter=0 total=3.484ms qkt=1.875 sm=0.706 pv=0.903 tflops=19.73
+[oxide-attn-gqa] llama3_8b iter=1 total=2.844ms qkt=1.236 sm=0.703 pv=0.905 tflops=24.16
+[oxide-attn-gqa] llama3_8b iter=2 total=2.855ms qkt=1.244 sm=0.702 pv=0.909 tflops=24.07
+[oxide-attn-gqa] llama3_8b iter=3 total=3.673ms qkt=2.062 sm=0.706 pv=0.905 tflops=18.71
+[oxide-attn-gqa] llama3_8b iter=4 total=3.124ms qkt=1.514 sm=0.702 pv=0.907 tflops=22.00
+[oxide-attn-gqa] llama3_8b iter=5 total=2.860ms qkt=1.245 sm=0.703 pv=0.911 tflops=24.03
+[oxide-attn-gqa] llama3_8b iter=6 total=2.844ms qkt=1.237 sm=0.701 pv=0.905 tflops=24.17
+[oxide-attn-gqa] llama3_8b iter=7 total=2.855ms qkt=1.244 sm=0.701 pv=0.909 tflops=24.07
+[oxide-attn-gqa] llama3_8b iter=8 total=2.855ms qkt=1.244 sm=0.704 pv=0.907 tflops=24.07
+[oxide-attn-gqa] llama3_8b iter=9 total=2.846ms qkt=1.238 sm=0.701 pv=0.907 tflops=24.15
+[oxide-attn-gqa] llama3_8b SUMMARY best=2.844ms (24.17 TF) median=2.855ms (24.07 TF)
+[oxide-attn-gqa] llama3_8b per-stage avg: qkt=1.414ms (46.8%) sm=0.703ms (23.2%) pv=0.907ms (30.0%) total=3.024ms
+[oxide-attn-gqa] results.csv written

@@ -1,0 +1,57 @@
+    Finished `release` profile [optimized] target(s) in 0.04s
+     Running `target/release/wgpu-attn-gqa`
+libEGL warning: failed to get driver name for fd -1
+
+libEGL warning: MESA-LOADER: failed to retrieve device information
+
+libEGL warning: failed to get driver name for fd -1
+
+MESA: error: ZINK: failed to choose pdev
+libEGL warning: egl: failed to create dri2 screen
+[wgpu] candidate: llvmpipe (LLVM 20.1.2, 256 bits)                   backend=Vulkan  type=Cpu
+[wgpu] candidate: llvmpipe (LLVM 20.1.2, 256 bits)                   backend=Gl  type=Cpu
+
+[wgpu] using: llvmpipe (LLVM 20.1.2, 256 bits) (Vulkan, type=Cpu)
+[wgpu] !! WARNING: only CPU adapters enumerated. This is the documented
+[wgpu] !! WSL2 dead-end (Wave 1-11). Kernel will run via llvmpipe on CPU.
+[wgpu] !! Any TFLOPS number below is NOT GPU perf; it is llvmpipe throughput.
+[wgpu] !! Correctness is still meaningful; timing is not.
+[wgpu] adapter caps: max_storage_buffer_binding_size = 128 MiB, max_buffer_size = 2047 MiB
+[wgpu] timestamp_query feature: true
+
+[wgpu] inputs dir = "/home/codeseys/cuda-exploration/analysis/wave15-attention-architecture/inputs"
+
+=== SHAPE: correctness ===
+[correctness] B=1 Nq=4 Nkv=2 S=128 D=64 groups=2
+[correctness] loaded Q (0.1 MiB)  K+V (0.1 MiB ea)  expected (0.1 MiB)
+[correctness] flops/iter = 0.02 GFLOP   dispatches: qkt=(8x8x4) sm=(512x1x1) pv=(4x8x4)
+[correctness] warmup 0:  total=8.384 ms  qkt=2.545 sm=3.285 pv=2.151  (0.0020 TFLOPS)  cpu_wall=9.45 ms
+[correctness] iter 1:  total=6.391 ms  qkt=1.579 sm=2.820 pv=1.549  (0.0026 TFLOPS)  cpu_wall=6.62 ms
+[correctness] iter 2:  total=6.761 ms  qkt=1.695 sm=2.829 pv=1.670  (0.0025 TFLOPS)  cpu_wall=7.15 ms
+[correctness] BEST   total=6.391 ms  0.0026 TFLOPS
+[correctness] MEDIAN total=6.761 ms  0.0025 TFLOPS
+[correctness] per-stage median:  qkt=1.695 ms (25.8%)  sm=2.829 ms (43.0%)  pv=1.670 ms (25.4%)
+[correctness] correctness: max_abs_err=1.341e-7  rel_err=6.202e-7  atol=1e-5  OK
+
+=== SHAPE: medium_512 (perf-only, synthetic inputs, no correctness check) ===
+[medium_512] note: canonical bench llama3_8b needs 512 MiB scores buffer but
+[medium_512]       llvmpipe caps at 128 MiB. medium_512 is a scaled-down perf sanity.
+[medium_512] B=1 Nq=8 Nkv=2 S=512 D=64 groups=4
+[medium_512] flops/iter = 0.54 GFLOP   scores buf = 8.0 MiB
+[medium_512] warmup 0:  total=99.521 ms  qkt=38.873 sm=18.918 pv=41.049  (0.0054 TFLOPS)  cpu_wall=106.45 ms
+[medium_512] iter 1:  total=104.989 ms  qkt=39.794 sm=19.792 pv=44.902  (0.0051 TFLOPS)  cpu_wall=105.31 ms
+[medium_512] iter 2:  total=95.097 ms  qkt=35.328 sm=20.272 pv=39.086  (0.0056 TFLOPS)  cpu_wall=95.40 ms
+[medium_512] iter 3:  total=82.785 ms  qkt=31.308 sm=18.467 pv=32.617  (0.0065 TFLOPS)  cpu_wall=83.09 ms
+[medium_512] BEST   total=82.785 ms  0.0065 TFLOPS
+[medium_512] MEDIAN total=95.097 ms  0.0056 TFLOPS
+[medium_512] per-stage median:  qkt=35.328 ms (37.5%)  sm=19.792 ms (21.0%)  pv=39.086 ms (41.5%)
+
+=== SHAPE: llama3_8b (canonical bench) ===
+[llama3_8b] SKIP: scores buffer 512 MiB exceeds max_storage_buffer_binding_size 128 MiB
+[llama3_8b] This is a wgpu-portable-limit issue: the default max storage binding
+[llama3_8b] (128 MiB on llvmpipe, often 2 GiB on NVIDIA Vulkan) bounds seq^2 * n_q.
+[llama3_8b] To run this shape would require either (a) a real GPU adapter with
+[llama3_8b] a higher binding cap, or (b) splitting scores into per-head buffers
+[llama3_8b] (which is how fused/FlashAttention avoids the problem entirely).
+
+[wgpu] Reminder: these times are llvmpipe on CPU. NOT GPU perf.

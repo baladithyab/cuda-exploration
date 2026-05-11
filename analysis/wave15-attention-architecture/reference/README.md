@@ -13,10 +13,16 @@ analysis/wave15-attention-architecture/
 ├── PLAN.md                          # the architecture proposal (read this first)
 ├── reference/
 │   ├── shapes.py                    # canonical GQAShape dataclass + 2 shape sets
+│   ├── shapes_mla.py                # MLAShape (DeepSeek-V3) — Wave 16.3
+│   ├── shapes_gdn.py                # GDNShape (Qwen3-Next decode) — Wave 16.4
 │   ├── tensors.py                   # NOT YET — for now use pytorch_reference.py
 │   ├── tolerances.py                # per-dtype atol/rtol thresholds
-│   ├── flops.py                     # single source of truth for FLOPS calculation
+│   ├── flops.py                     # single source of truth for GQA FLOPS calculation
+│   ├── flops_mla.py                 # MLA-attention-core FLOPS — Wave 16.3
+│   ├── flops_gdn.py                 # GDN-decode FLOPS + GB/s model — Wave 16.4
 │   ├── pytorch_reference.py         # PyTorch SDPA + naive GQA; correctness oracle
+│   ├── pytorch_reference_mla.py     # PyTorch MLA reference — Wave 16.3
+│   ├── pytorch_reference_gdn.py     # PyTorch GDN-decode reference — Wave 16.4
 │   └── reference_run.log            # captured stdout of running pytorch_reference.py
 └── inputs/                          # .gitignore'd — regenerate via pytorch_reference.py
     ├── .gitignore
@@ -53,12 +59,31 @@ numbers — broken kernels don't get published TFLOPS.
 
 ## Canonical shapes
 
-Defined in `reference/shapes.py`:
+GQA shapes in `reference/shapes.py`:
 
 | name          | batch | seq  | n_q  | n_kv | d_head | groups | purpose      |
 |---------------|------:|-----:|-----:|-----:|-------:|-------:|--------------|
 | correctness   | 1     | 128  | 4    | 2    | 64     | 2      | numerical    |
 | llama3_8b     | 1     | 2048 | 32   | 8    | 128    | 4      | bench        |
+
+MLA shapes in `reference/shapes_mla.py` (Wave 16.3):
+
+| name            | batch | seq  | n_h | d_h | d_rope | qk_hd | d_v | d_c | purpose    |
+|-----------------|------:|-----:|----:|----:|-------:|------:|----:|----:|------------|
+| correctness_mla | 1     | 128  | 4   | 64  | 32     | 96    | 64  | 128 | numerical  |
+| deepseek_v3     | 1     | 2048 | 128 | 128 | 64     | 192   | 128 | 512 | bench      |
+
+GDN shapes in `reference/shapes_gdn.py` (Wave 16.4 — single-timestep decode):
+
+| name                | batch | n_heads | d_k | d_v | state (f32) | purpose    |
+|---------------------|------:|--------:|----:|----:|------------:|------------|
+| correctness         | 2     | 4       | 64  | 64  | 128 KB      | numerical  |
+| qwen3_next_decode   | 1     | 16      | 256 | 256 | 4 MB        | bench      |
+
+GDN decode arithmetic intensity ≈ 0.75 flops/byte → strongly
+memory-bound. Headline metric: **GB/s**, not TFLOPS.
+Inputs: `gdn_<shape>_{q,k,v,alpha,beta}_{f16,f32}.npy`, `_S_in_f32.npy`,
+`_o_expected_f16.npy`, `_S_out_expected_f32.npy`.
 
 ## FLOPS model
 

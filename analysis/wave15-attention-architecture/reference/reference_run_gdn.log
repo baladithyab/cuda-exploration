@@ -1,0 +1,10 @@
+GPU available: True
+GPU: NVIDIA GeForce RTX 5090
+Compute cap: sm_120
+
+[correctness] fused-vs-canonical  d_o=3.052e-05  d_S=1.639e-07  OK
+  wrote /home/codeseys/cuda-exploration/analysis/wave15-attention-architecture/inputs/gdn_correctness_{q,k,v,alpha,beta}_{f16,f32}.npy, _S_in_f32.npy, _o_expected_f16.npy, _S_out_expected_f32.npy (state=0.13MB f32)
+
+[qwen3_next_decode] fused-vs-canonical  d_o=6.104e-05  d_S=4.917e-07  OK
+  wrote /home/codeseys/cuda-exploration/analysis/wave15-attention-architecture/inputs/gdn_qwen3_next_decode_{q,k,v,alpha,beta}_{f16,f32}.npy, _S_in_f32.npy, _o_expected_f16.npy, _S_out_expected_f32.npy (state=4.19MB f32)
+

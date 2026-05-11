@@ -1,0 +1,12 @@
+GPU available: True
+GPU: NVIDIA GeForce RTX 5090
+Compute cap: sm_120
+
+[correctness_mla] batch=1 seq=128 n_h=4 qk_head_dim=96 d_v=64
+  SDPA vs naive  max_abs_err=2.086e-07  rel=6.864e-07  OK
+  wrote /home/codeseys/cuda-exploration/analysis/wave15-attention-architecture/inputs/mla_correctness_mla_{q,k,v}_{f32,f16}.npy and _expected_f32.npy (Q=0.1MB f16)
+
+[deepseek_v3] batch=1 seq=2048 n_h=128 qk_head_dim=192 d_v=128
+  SDPA vs naive  max_abs_err=8.196e-08  rel=9.360e-07  OK
+  wrote /home/codeseys/cuda-exploration/analysis/wave15-attention-architecture/inputs/mla_deepseek_v3_{q,k,v}_{f32,f16}.npy and _expected_f32.npy (Q=100.7MB f16)
+

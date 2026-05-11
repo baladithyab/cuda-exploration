@@ -1,0 +1,28 @@
+cuda-tile version: 1.3.0
+cupy: 14.0.1
+device: NVIDIA GeForce RTX 5090
+compute capability: sm_120
+
+[bench] shape=deepseek_v3 B=1 S=2048 n_h=128 qk=192 d_v=128
+[bench] qk_head_dim=192 → qk_pad=256
+[bench] BLOCK_M=64 BLOCK_N=64
+[bench] iter=0 gpu_ms=3.577 tflops=96.057
+[bench] iter=1 gpu_ms=3.533 tflops=97.245
+[bench] iter=2 gpu_ms=4.240 tflops=81.040
+[bench] iter=3 gpu_ms=3.512 tflops=97.841
+[bench] iter=4 gpu_ms=3.330 tflops=103.198
+[bench] iter=5 gpu_ms=3.872 tflops=88.733
+[bench] iter=6 gpu_ms=3.620 tflops=94.907
+[bench] iter=7 gpu_ms=3.415 tflops=100.628
+[bench] iter=8 gpu_ms=4.102 tflops=83.771
+[bench] iter=9 gpu_ms=3.780 tflops=90.896
+
+================================================================
+ BENCH SUMMARY — deepseek_v3 (B=1 S=2048 n_h=128 qk=192 d_v=128)
+   BLOCK_M=64 BLOCK_N=64 QK_PAD=256 grid=(128, 32)
+   median : 3.620 ms   96.057 TFLOPS
+   best   : 3.330 ms   103.198 TFLOPS
+   cuBLAS hgemm peak (Wave 14.1) : 218 TFLOPS  → ratio 47.34%
+   cutile-attn-gqa (Wave 15.1)   : 165 TFLOPS  → ratio 62.54%
+================================================================
+
