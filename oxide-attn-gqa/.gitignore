@@ -4,3 +4,4 @@ target/
 *.ltoir
 *.ptx
 *.sass
+*.npy
