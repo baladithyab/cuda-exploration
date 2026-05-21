@@ -1,0 +1,15 @@
+# Wave 17 W1e cuTile KDA: ignore venv + caches + cubins
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# JIT artifacts (cubins are large; .sass disassemblies kept as evidence)
+*.cubin
+*.fatbin
+*.ptx
+*.ll
+.cuda_tile_cache/
+
+# Bench outputs are regenerated; not committed
+results.csv

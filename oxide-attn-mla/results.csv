@@ -1,0 +1,14 @@
+impl,shape,iter,total_ms,qkt_ms,softmax_ms,pv_ms,TFLOPS
+oxide-attn-mla,correctness_mla,0,0.058720,,,,0.357
+oxide-attn-mla,correctness_mla,1,0.023040,,,,0.910
+oxide-attn-mla,correctness_mla,2,0.022624,,,,0.927
+oxide-attn-mla,deepseek_v3,0,16.045984,8.372128,3.735552,3.938304,21.413
+oxide-attn-mla,deepseek_v3,1,15.530464,8.406496,3.120128,4.003840,22.124
+oxide-attn-mla,deepseek_v3,2,15.581664,8.550112,3.296960,3.734592,22.051
+oxide-attn-mla,deepseek_v3,3,14.101568,7.358528,3.406112,3.336928,24.366
+oxide-attn-mla,deepseek_v3,4,14.439904,7.887328,2.832384,3.720192,23.795
+oxide-attn-mla,deepseek_v3,5,13.908096,7.339104,2.841568,3.727424,24.705
+oxide-attn-mla,deepseek_v3,6,13.919360,7.345568,3.224256,3.349536,24.685
+oxide-attn-mla,deepseek_v3,7,14.456256,7.893408,2.831648,3.731200,23.768
+oxide-attn-mla,deepseek_v3,8,13.931968,7.352736,2.836448,3.742784,24.663
+oxide-attn-mla,deepseek_v3,9,14.019648,7.371808,3.236864,3.410976,24.508

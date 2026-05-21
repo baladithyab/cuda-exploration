@@ -1,0 +1,8 @@
+attn_gdn
+bench
+attn_gdn.sass
+results.csv
+run.log
+build.log
+*.o
+*.cubin

@@ -1,0 +1,123 @@
+=========================================
+RUSTC-CODEGEN-CUDA BUILD: oxide-attn-mla
+=========================================
+
+Building oxide-attn-mla...
+
+   Compiling oxide-attn-mla v0.1.0 (/home/codeseys/cuda-exploration/oxide-attn-mla)
+warning: unused import: `CudaEvent`
+  --> src/main.rs:43:30
+   |
+43 | use cuda_core::{CudaContext, CudaEvent, DeviceBuffer, LaunchConfig, sys};
+   |                              ^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unnecessary `unsafe` block
+   --> src/main.rs:270:17
+    |
+270 |         let e = unsafe { core::intrinsics::expf32(v - row_max) };
+    |                 ^^^^^^ unnecessary `unsafe` block
+    |
+    = note: `#[warn(unused_unsafe)]` (part of `#[warn(unused)]`) on by default
+
+warning: `static mut cuda_oxide_kernel_246e25db_mla_qkt_kernel::TILE_Q` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:127:17
+    |
+127 |                 TILE_Q[idx] = v;
+    |                 ^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_mla_qkt_kernel::TILE_K` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:142:17
+    |
+142 |                 TILE_K[idx] = v;
+    |                 ^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_mla_qkt_kernel::TILE_Q` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:155:22
+    |
+155 |                 a0 = TILE_Q[(ty4 + 0) * 16 + kk];
+    |                      ^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_mla_qkt_kernel::TILE_K` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:159:22
+    |
+159 |                 b0 = TILE_K[kk * 64 + tx4 + 0];
+    |                      ^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_mla_pv_kernel::TILE_P` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:363:17
+    |
+363 |                 TILE_P[idx] = vv;
+    |                 ^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_mla_pv_kernel::TILE_V` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:377:17
+    |
+377 |                 TILE_V[idx] = vv;
+    |                 ^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_mla_pv_kernel::TILE_P` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:390:22
+    |
+390 |                 a0 = TILE_P[(ty4 + 0) * 16 + kk];
+    |                      ^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_mla_pv_kernel::TILE_V` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:394:22
+    |
+394 |                 b0 = TILE_V[kk * 64 + tx4 + 0];
+    |                      ^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_softmax_kernel::WMAX` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:250:29
+    |
+250 |     if lane == 0 { unsafe { WMAX[warp_id] = m; } }
+    |                             ^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_softmax_kernel::WMAX` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:253:49
+    |
+253 |         let mut v: f32 = if lane < 4 { unsafe { WMAX[lane] } } else { f32::NEG_INFINITY };
+    |                                                 ^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_softmax_kernel::ROW_MAX` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:260:33
+    |
+260 |         if lane == 0 { unsafe { ROW_MAX[0] = v; } }
+    |                                 ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_softmax_kernel::ROW_MAX` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:263:28
+    |
+263 |     let row_max = unsafe { ROW_MAX[0] };
+    |                            ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_softmax_kernel::WSUM` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:280:29
+    |
+280 |     if lane == 0 { unsafe { WSUM[warp_id] = s; } }
+    |                             ^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_softmax_kernel::WSUM` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:283:49
+    |
+283 |         let mut v: f32 = if lane < 4 { unsafe { WSUM[lane] } } else { 0.0 };
+    |                                                 ^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_softmax_kernel::ROW_SUM` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:286:33
+    |
+286 |         if lane == 0 { unsafe { ROW_SUM[0] = v; } }
+    |                                 ^^^^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_softmax_kernel::ROW_SUM` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:289:28
+    |
+289 |     let row_sum = unsafe { ROW_SUM[0] };
+    |                            ^^^^^^^
+
+warning: `oxide-attn-mla` (bin "oxide-attn-mla") generated 18 warnings (run `cargo fix --bin "oxide-attn-mla" -p oxide-attn-mla` to apply 1 suggestion)
+    Finished `release` profile [optimized] target(s) in 0.61s
+
+✓ Build succeeded

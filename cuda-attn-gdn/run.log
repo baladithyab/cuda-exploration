@@ -1,0 +1,9 @@
+[gdn] device: NVIDIA GeForce RTX 5090 (sm_120)
+[gdn] inputs dir: /home/codeseys/cuda-exploration/analysis/wave15-attention-architecture/inputs
+[gdn] === correctness run (B=2 H=4 d_k=64 d_v=64) ===
+[gdn] o    max_abs=3.052e-05 max_rel=5.834e-04   |want|max=2.954e-01   OK
+[gdn] Sout max_abs=2.980e-08 max_rel=7.019e-04   |want|max=4.597e-01   OK
+
+[gdn] === bench-shape smoke (B=1 H=16 d_k=256 d_v=256) ===
+[gdn] (qwen3) o   max_abs=6.104e-05   OK
+[gdn] (qwen3) Sout max_abs=2.980e-08 OK
