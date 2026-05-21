@@ -34,27 +34,29 @@ cuTile wins reduction via TMA bulk loads (`UTMALDG.1D` × 7 in cuTile cubin, **0
 | **cuBLAS** | 73.6 (sgemm) / 104.2 (tf32-mode) | **218.4** (hgemm) | **219.2** (bgemm) | 104.2 |
 | cuda-oxide | 45.0 (microtile) | (no TC API) | (no TC API) | (no TC API) |
 | **cutile** | 8.7 ⚠️ | **172.5** (79% of cuBLAS) | 159.8 | 84.0 |
+| **Mojo** | 7.1 (naive) | (constraint: A.dtype==C.dtype) | (constraint: A.dtype==C.dtype) | **55.5** ⚡ (Wave 19) |
 | nvcc | 38.4 (tiled) | — | — | — |
 
-**Three findings that reframe the headline:**
+**Four findings that reframe the headline:**
 
 1. **cuTile mixed-precision is real and competitive**: 172.5 TF f16 = 79% of cuBLAS hgemm. Tensor cores engage correctly via `ct.mma` at f16/bf16/tf32 — verified by HMMA instruction counts in SASS. See [`results/wave13-summary.md`](results/wave13-summary.md), [`results/wave14-summary.md`](results/wave14-summary.md), [`cutile-matmul-tiled-mixed/ANALYSIS.md`](cutile-matmul-tiled-mixed/ANALYSIS.md).
 2. **cuTile's f32 path is slow but the test was a category error.** Blackwell consumer hardware has NO f32 MMA. Calling `ct.mma` on f32 inputs falls back to scalar FMUL+FADD with no FFMA fusion (the latter is a real bug — drafted upstream issue at [`docs/upstream-issues/01-ctmma-f32-no-ffma-fusion.md`](docs/upstream-issues/01-ctmma-f32-no-ffma-fusion.md)).
 3. **cuda-oxide v0.1.0 has no usable TC API on consumer Blackwell.** The 45 TFLOPS f32 microtile is the cuda-oxide ceiling on RTX 5090 today. Source-verified: zero `mma.sync` instructions, only Hopper-only `wgmma` (placeholder!) and datacenter-only `tcgen05` modules. See [`analysis/wave14-oxide-tc-investigation/REPORT.md`](analysis/wave14-oxide-tc-investigation/REPORT.md).
+4. **Mojo can engage tensor cores on sm_120 — but only same-dtype.** `from layout.tensor_core import TensorCore` compiles to `HMMA.1684.F32.TF32` × 64 in the warp loop (verified: [`mojo-matmul-tc/matmul_tc.sass`](mojo-matmul-tc/matmul_tc.sass)). **55.5 TFLOPS f32→TF32→f32 at 4096³**, 7.8× the Mojo naive baseline and 1.5× the nvcc tiled f32. The mixed-precision lane (bf16-in/f32-acc — cuTile's killer 159 TFLOPS row) is currently locked behind a same-dtype constraint in the high-level wrapper; reaching it requires `from std.gpu.compute.mma import mma` directly. See [`mojo-matmul-tc/ANALYSIS.md`](mojo-matmul-tc/ANALYSIS.md), [`results/wave19-summary.md`](results/wave19-summary.md).
 
 ### What the user-facing read becomes
 
 If you're choosing a Python-first / Rust-first / multi-vendor GPU compute frontend on Blackwell **today** (May 2026):
 
-- **Half-precision matmul** → cuTile with `ct.mma`(f16/bf16/tf32, f32 acc). 79% of cuBLAS, one Python decorator.
-- **f32 matmul peak** → cuBLAS sgemm with TF32 mode (104 TF) or pedantic IEEE (74 TF).
+- **Half-precision matmul** → cuTile with `ct.mma`(f16/bf16/tf32, f32 acc). 79% of cuBLAS, one Python decorator. **Mojo via `TensorCore` reaches the TF32 lane (55.5 TF, 66% of cuTile's TF32) but is currently same-dtype only — no bf16/f16 mixed-precision through the high-level wrapper.**
+- **f32 matmul peak** → cuBLAS sgemm with TF32 mode (104 TF) or pedantic IEEE (74 TF). **Mojo TF32 via `TensorCore` lands at 55.5 TF — convenient, fewer LOC, but ~50% of cuBLAS.**
 - **Reduction-pattern memory work** → cuTile (`ct.sum` lowers to TMA bulk loads on sm_120). Mojo's `block.sum` is a one-line stdlib alternative if you don't need TMA.
 - **Vec-add / streaming memory** → any of nvcc / cuda-oxide / cuTile / Mojo; parity within 1% at ~90% of HBM peak.
 - **Naive (no-TC) matmul or non-trivial Rust kernels (3DGS, etc.)** → cuda-oxide.
 - **Multi-vendor portability (NVIDIA + AMD + Apple from one source)** → Mojo (untested vs cross-vendor in this repo, but officially supported).
 - **Bit-exact f32 with no MMA** → cuda-oxide register-microtile (45 TF) or cuBLAS pedantic.
 
-Per-wave details: [Wave 12 SUMMARY](results/wave12-summary.md) (cuTile axis added), [Wave 13](results/wave13-summary.md) (dtype falsification + SASS), [Wave 14](results/wave14-summary.md) (cuBLAS half-precision + cuda-oxide TC verdict), **[Wave 18](results/wave18-summary.md) (Mojo as a fifth frontend, memory-bound axis)**.
+Per-wave details: [Wave 12 SUMMARY](results/wave12-summary.md) (cuTile axis added), [Wave 13](results/wave13-summary.md) (dtype falsification + SASS), [Wave 14](results/wave14-summary.md) (cuBLAS half-precision + cuda-oxide TC verdict), [Wave 18](results/wave18-summary.md) (Mojo as a fifth frontend, memory-bound axis), **[Wave 19](results/wave19-summary.md) (Mojo TC reach on sm_120 confirmed via HMMA in SASS)**.
 
 ---
 
