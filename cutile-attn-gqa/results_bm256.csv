@@ -1,0 +1,11 @@
+impl,kernel,batch,seq,n_q,n_kv,d_head,block_m,block_n,iter,gpu_ms,tflops
+cutile,gqa_fwd_fused,1,2048,32,8,128,256,256,0,7.489504,9.175438
+cutile,gqa_fwd_fused,1,2048,32,8,128,256,256,1,7.045632,9.753487
+cutile,gqa_fwd_fused,1,2048,32,8,128,256,256,2,7.059968,9.733681
+cutile,gqa_fwd_fused,1,2048,32,8,128,256,256,3,7.127552,9.641385
+cutile,gqa_fwd_fused,1,2048,32,8,128,256,256,4,7.140864,9.623412
+cutile,gqa_fwd_fused,1,2048,32,8,128,256,256,5,7.373280,9.320069
+cutile,gqa_fwd_fused,1,2048,32,8,128,256,256,6,7.243232,9.487405
+cutile,gqa_fwd_fused,1,2048,32,8,128,256,256,7,7.097856,9.681723
+cutile,gqa_fwd_fused,1,2048,32,8,128,256,256,8,7.346688,9.353804
+cutile,gqa_fwd_fused,1,2048,32,8,128,256,256,9,7.220736,9.516963

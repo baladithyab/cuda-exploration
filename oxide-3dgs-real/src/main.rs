@@ -92,10 +92,17 @@ pub fn rasterize_2dgs(
 
 // ---------- Host-side PLY parsing ----------
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 struct RawGaussian {
     x: f32, y: f32, z: f32,
     f_dc: [f32; 3],
+    // SH degree 3 "rest" coefficients, layout per Inria 3DGS PLY convention:
+    //   f_rest_0..14   = channel 0 (R) bands 1..3, 15 floats
+    //   f_rest_15..29  = channel 1 (G), 15 floats
+    //   f_rest_30..44  = channel 2 (B), 15 floats
+    // Per channel order: band1 (3), band2 (5), band3 (7).
+    // Empty if PLY has no f_rest_* properties (= SH degree 0 only).
+    f_rest: Vec<f32>,
     opacity_logit: f32,
     scale: [f32; 3],
     rot: [f32; 4], // w, x, y, z (COLMAP/3DGS convention = rot_0..3)
@@ -151,6 +158,19 @@ fn parse_ply(path: &str) -> Vec<RawGaussian> {
     let ir2 = idx("rot_2").unwrap();
     let ir3 = idx("rot_3").unwrap();
 
+    // SH degree 3: 45 "rest" coefficients (f_rest_0..44). Optional — if any are
+    // missing, we fall back to SH degree 0 (DC only).
+    let mut frest_idx: Vec<usize> = Vec::with_capacity(45);
+    let mut have_rest = true;
+    for k in 0..45 {
+        let name = format!("f_rest_{}", k);
+        match idx(&name) {
+            Some(i) => frest_idx.push(i),
+            None => { have_rest = false; break; }
+        }
+    }
+    println!("SH support: {}", if have_rest { "degree 3 (16 coefs/channel)" } else { "degree 0 only (DC)" });
+
     let body = &buf[header_end..];
     let expected_len = n_vertex * nprops * 4;
     assert_eq!(body.len(), expected_len, "body size mismatch");
@@ -162,15 +182,98 @@ fn parse_ply(path: &str) -> Vec<RawGaussian> {
             let off = base + pi * 4;
             f32::from_le_bytes([body[off], body[off + 1], body[off + 2], body[off + 3]])
         };
+        let f_rest = if have_rest {
+            let mut v = Vec::with_capacity(45);
+            for &pi in &frest_idx { v.push(read_f(pi)); }
+            v
+        } else {
+            Vec::new()
+        };
         out.push(RawGaussian {
             x: read_f(ix), y: read_f(iy), z: read_f(iz),
             f_dc: [read_f(ifdc0), read_f(ifdc1), read_f(ifdc2)],
+            f_rest,
             opacity_logit: read_f(iop),
             scale: [read_f(is0), read_f(is1), read_f(is2)],
             rot:   [read_f(ir0), read_f(ir1), read_f(ir2), read_f(ir3)],
         });
     }
     out
+}
+
+// ---------- SH evaluation (degree 0 or 3) ----------
+//
+// Per Inria 3DGS / gsplat convention. PLY layout for f_rest is "interleaved by
+// channel": the 45 floats are [R band1+2+3 (15), G band1+2+3 (15), B band1+2+3 (15)].
+// Within each channel: [band1 (3), band2 (5), band3 (7)].
+// `dir` is the unit vector from the camera origin to the gaussian center in
+// world space (this is the standard 3DGS view-direction convention; gsplat
+// uses the same sign).
+//
+// SH constants (numerically identical to Inria's reference):
+const SH_C0: f32 = 0.28209479177387814;
+const SH_C1: f32 = 0.4886025119029199;
+const SH_C2: [f32; 5] = [
+    1.0925484305920792,
+    -1.0925484305920792,
+    0.31539156525252005,
+    -1.0925484305920792,
+    0.5462742152960396,
+];
+const SH_C3: [f32; 7] = [
+    -0.5900435899266435,
+    2.890611442640554,
+    -0.4570457994644658,
+    0.3731763325901154,
+    -0.4570457994644658,
+    1.445305721320277,
+    -0.5900435899266435,
+];
+
+// Evaluate SH for one channel.  `dc` is the band-0 coefficient; `rest15` is
+// the 15 coefficients [b1_0..b1_2, b2_0..b2_4, b3_0..b3_6] for that channel.
+// Returns the unclamped color value (caller adds 0.5 and clamps).
+fn sh_eval_one_channel(dc: f32, rest15: &[f32], x: f32, y: f32, z: f32) -> f32 {
+    // Band 0
+    let mut r = SH_C0 * dc;
+    // Band 1: -y, z, -x
+    r = r + SH_C1 * (-y * rest15[0] + z * rest15[1] - x * rest15[2]);
+    // Band 2 polynomials
+    let xx = x * x; let yy = y * y; let zz = z * z;
+    let xy = x * y; let yz = y * z; let xz = x * z;
+    r = r + SH_C2[0] * xy * rest15[3]
+          + SH_C2[1] * yz * rest15[4]
+          + SH_C2[2] * (2.0 * zz - xx - yy) * rest15[5]
+          + SH_C2[3] * xz * rest15[6]
+          + SH_C2[4] * (xx - yy) * rest15[7];
+    // Band 3 polynomials
+    r = r + SH_C3[0] * y * (3.0 * xx - yy) * rest15[8]
+          + SH_C3[1] * xy * z * rest15[9]
+          + SH_C3[2] * y * (4.0 * zz - xx - yy) * rest15[10]
+          + SH_C3[3] * z * (2.0 * zz - 3.0 * xx - 3.0 * yy) * rest15[11]
+          + SH_C3[4] * x * (4.0 * zz - xx - yy) * rest15[12]
+          + SH_C3[5] * z * (xx - yy) * rest15[13]
+          + SH_C3[6] * x * (xx - 3.0 * yy) * rest15[14];
+    r
+}
+
+// Evaluate SH for all three channels at view-direction (vx,vy,vz). Adds the
+// 0.5 bias; caller clamps. If `f_rest` is empty, returns DC-only result
+// (matches the Wave 9/10 SH-deg-0 path exactly).
+fn sh_to_rgb(f_dc: &[f32; 3], f_rest: &[f32], vx: f32, vy: f32, vz: f32) -> (f32, f32, f32) {
+    if f_rest.is_empty() {
+        // SH deg 0: c = SH_C0 * f_dc + 0.5
+        return (
+            SH_C0 * f_dc[0] + 0.5,
+            SH_C0 * f_dc[1] + 0.5,
+            SH_C0 * f_dc[2] + 0.5,
+        );
+    }
+    debug_assert_eq!(f_rest.len(), 45);
+    let r = sh_eval_one_channel(f_dc[0], &f_rest[0..15],  vx, vy, vz) + 0.5;
+    let g = sh_eval_one_channel(f_dc[1], &f_rest[15..30], vx, vy, vz) + 0.5;
+    let b = sh_eval_one_channel(f_dc[2], &f_rest[30..45], vx, vy, vz) + 0.5;
+    (r, g, b)
 }
 
 // ---------- Host-side projection ----------
@@ -252,6 +355,15 @@ fn project_all(raws: &[RawGaussian], cam: &CamPose) -> (Vec<ProjGaussian>, ProjS
     let mut mean2d_max = (f32::NEG_INFINITY, f32::NEG_INFINITY);
     let mut conic_scales: Vec<f32> = Vec::new();
 
+    // Camera origin in world space: o = -W^T * t   (since p_cam = W*p + t,
+    // and the origin satisfies W*o + t = 0).
+    let wt = mat3_transpose(&cam.w);
+    let cam_origin = [
+        -(wt[0] * cam.t[0] + wt[1] * cam.t[1] + wt[2] * cam.t[2]),
+        -(wt[3] * cam.t[0] + wt[4] * cam.t[1] + wt[5] * cam.t[2]),
+        -(wt[6] * cam.t[0] + wt[7] * cam.t[1] + wt[8] * cam.t[2]),
+    ];
+
     for g in raws {
         // World -> camera: p_cam = W * p_world + t
         let p = [g.x, g.y, g.z];
@@ -311,11 +423,19 @@ fn project_all(raws: &[RawGaussian], cam: &CamPose) -> (Vec<ProjGaussian>, ProjS
         let conic_xy = -b_aa * inv_det;
         let conic_yy = a_aa * inv_det;
 
-        // SH DC -> color.
-        let c0 = 0.28209479_f32;
-        let col_r = (c0 * g.f_dc[0] + 0.5).clamp(0.0, 1.0);
-        let col_g = (c0 * g.f_dc[1] + 0.5).clamp(0.0, 1.0);
-        let col_b = (c0 * g.f_dc[2] + 0.5).clamp(0.0, 1.0);
+        // SH evaluation -> color.  View direction in WORLD space, from camera
+        // origin to the gaussian center, normalized.
+        let dx = g.x - cam_origin[0];
+        let dy = g.y - cam_origin[1];
+        let dz = g.z - cam_origin[2];
+        let dn = (dx * dx + dy * dy + dz * dz).sqrt().max(1e-8);
+        let vx = dx / dn;
+        let vy = dy / dn;
+        let vz = dz / dn;
+        let (rr, gg, bb) = sh_to_rgb(&g.f_dc, &g.f_rest, vx, vy, vz);
+        let col_r = rr.clamp(0.0, 1.0);
+        let col_g = gg.clamp(0.0, 1.0);
+        let col_b = bb.clamp(0.0, 1.0);
         let op = sigmoid(g.opacity_logit);
 
         depth_min = depth_min.min(pc[2]);
@@ -502,6 +622,18 @@ fn render_cam(
 
     save_ppm(out_ppm, &h_r, &h_g, &h_b, W, H);
     println!("[{label}] wrote {out_ppm}");
+
+    // Dump raw f32 RGB planes for byte-exact cross-impl comparison (cam A only).
+    if label == "camA_minusZ" {
+        let manifest = env!("CARGO_MANIFEST_DIR");
+        let f32_path = format!("{}/output_utsuho_plush_A.f32", manifest);
+        let f = File::create(&f32_path).expect("create f32");
+        let mut bw = BufWriter::new(f);
+        for v in &h_r { bw.write_all(&v.to_le_bytes()).unwrap(); }
+        for v in &h_g { bw.write_all(&v.to_le_bytes()).unwrap(); }
+        for v in &h_b { bw.write_all(&v.to_le_bytes()).unwrap(); }
+        println!("[{label}] wrote {f32_path}");
+    }
 }
 
 fn main() {

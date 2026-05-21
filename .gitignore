@@ -26,6 +26,16 @@ cublas-attn-mla/bench
 *.so
 *.obj
 
+# Helper diff binaries
+cuda-3dgs-real/f32_diff
+cuda-3dgs-real/ppm_diff
+cuda-3dgs-real/sh_cpu_ref
+
+# Large f32 diagnostic dumps and per-BLOCK_M SASS files
+*.f32
+cutile-attn-gqa/gqa_fwd_fused_bm*.sass
+cutile-attn-gqa/gqa_fwd_fused_bm*.cubin
+
 # Python cache (rebuild on import)
 __pycache__/
 *.pyc

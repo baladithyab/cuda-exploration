@@ -92,6 +92,12 @@ __global__ void rasterize_2dgs(
 struct RawGaussian {
     float x, y, z;
     float f_dc[3];
+    // SH degree 3 "rest" coefficients (45 floats), per-channel layout:
+    //   f_rest[0..15]  = R bands 1..3
+    //   f_rest[15..30] = G bands 1..3
+    //   f_rest[30..45] = B bands 1..3
+    // Empty if PLY has no f_rest_* properties (= SH degree 0 only).
+    std::vector<float> f_rest;
     float opacity_logit;
     float scale[3];
     float rot[4]; // w, x, y, z
@@ -146,6 +152,21 @@ static std::vector<RawGaussian> parse_ply(const std::string& path) {
     int is0 = idx("scale_0"), is1 = idx("scale_1"), is2 = idx("scale_2");
     int ir0 = idx("rot_0"), ir1 = idx("rot_1"), ir2 = idx("rot_2"), ir3 = idx("rot_3");
 
+    // SH degree 3: 45 "rest" coefficients (f_rest_0..44). Optional.
+    auto idx_opt = [&](const char* name) -> int {
+        for (size_t k = 0; k < props.size(); ++k) if (props[k] == name) return (int)k;
+        return -1;
+    };
+    int frest_idx[45];
+    bool have_rest = true;
+    for (int k = 0; k < 45; ++k) {
+        char nm[32]; snprintf(nm, sizeof(nm), "f_rest_%d", k);
+        int p = idx_opt(nm);
+        if (p < 0) { have_rest = false; break; }
+        frest_idx[k] = p;
+    }
+    printf("SH support: %s\n", have_rest ? "degree 3 (16 coefs/channel)" : "degree 0 only (DC)");
+
     const char* body = &buf[header_end];
     size_t body_len = buf.size() - header_end;
     size_t expected = n_vertex * nprops * 4;
@@ -168,9 +189,70 @@ static std::vector<RawGaussian> parse_ply(const std::string& path) {
         g.opacity_logit = rf(base, iop);
         g.scale[0] = rf(base, is0); g.scale[1] = rf(base, is1); g.scale[2] = rf(base, is2);
         g.rot[0] = rf(base, ir0); g.rot[1] = rf(base, ir1); g.rot[2] = rf(base, ir2); g.rot[3] = rf(base, ir3);
-        out.push_back(g);
+        if (have_rest) {
+            g.f_rest.resize(45);
+            for (int k = 0; k < 45; ++k) g.f_rest[k] = rf(base, frest_idx[k]);
+        }
+        out.push_back(std::move(g));
     }
     return out;
+}
+
+// ---------- SH evaluation (degree 0 or 3) ----------
+// Numerically identical to the Rust path in oxide-3dgs-real/src/main.rs.
+
+static constexpr float SH_C0 = 0.28209479177387814f;
+static constexpr float SH_C1 = 0.4886025119029199f;
+static constexpr float SH_C2_0 =  1.0925484305920792f;
+static constexpr float SH_C2_1 = -1.0925484305920792f;
+static constexpr float SH_C2_2 =  0.31539156525252005f;
+static constexpr float SH_C2_3 = -1.0925484305920792f;
+static constexpr float SH_C2_4 =  0.5462742152960396f;
+static constexpr float SH_C3_0 = -0.5900435899266435f;
+static constexpr float SH_C3_1 =  2.890611442640554f;
+static constexpr float SH_C3_2 = -0.4570457994644658f;
+static constexpr float SH_C3_3 =  0.3731763325901154f;
+static constexpr float SH_C3_4 = -0.4570457994644658f;
+static constexpr float SH_C3_5 =  1.445305721320277f;
+static constexpr float SH_C3_6 = -0.5900435899266435f;
+
+static inline float sh_eval_one_channel(float dc, const float* rest15,
+                                        float x, float y, float z) {
+    // Band 0
+    float r = SH_C0 * dc;
+    // Band 1: -y, z, -x
+    r = r + SH_C1 * (-y * rest15[0] + z * rest15[1] - x * rest15[2]);
+    // Band 2
+    float xx = x*x, yy = y*y, zz = z*z;
+    float xy = x*y, yz = y*z, xz = x*z;
+    r = r + SH_C2_0 * xy * rest15[3]
+          + SH_C2_1 * yz * rest15[4]
+          + SH_C2_2 * (2.0f * zz - xx - yy) * rest15[5]
+          + SH_C2_3 * xz * rest15[6]
+          + SH_C2_4 * (xx - yy) * rest15[7];
+    // Band 3
+    r = r + SH_C3_0 * y * (3.0f * xx - yy) * rest15[8]
+          + SH_C3_1 * xy * z * rest15[9]
+          + SH_C3_2 * y * (4.0f * zz - xx - yy) * rest15[10]
+          + SH_C3_3 * z * (2.0f * zz - 3.0f * xx - 3.0f * yy) * rest15[11]
+          + SH_C3_4 * x * (4.0f * zz - xx - yy) * rest15[12]
+          + SH_C3_5 * z * (xx - yy) * rest15[13]
+          + SH_C3_6 * x * (xx - 3.0f * yy) * rest15[14];
+    return r;
+}
+
+static inline void sh_to_rgb(const float f_dc[3], const std::vector<float>& f_rest,
+                             float vx, float vy, float vz,
+                             float* out_r, float* out_g, float* out_b) {
+    if (f_rest.empty()) {
+        *out_r = SH_C0 * f_dc[0] + 0.5f;
+        *out_g = SH_C0 * f_dc[1] + 0.5f;
+        *out_b = SH_C0 * f_dc[2] + 0.5f;
+        return;
+    }
+    *out_r = sh_eval_one_channel(f_dc[0], f_rest.data() +  0, vx, vy, vz) + 0.5f;
+    *out_g = sh_eval_one_channel(f_dc[1], f_rest.data() + 15, vx, vy, vz) + 0.5f;
+    *out_b = sh_eval_one_channel(f_dc[2], f_rest.data() + 30, vx, vy, vz) + 0.5f;
 }
 
 // ---------- Host-side projection ----------
@@ -241,6 +323,14 @@ static std::vector<ProjGaussian> project_all(const std::vector<RawGaussian>& raw
     float m2d_max_x=-INFINITY, m2d_max_y=-INFINITY;
     std::vector<float> conic_scales;
 
+    // Camera origin in world space: o = -W^T * t.
+    float Wt_pose[9]; mat3_transpose(cam.w, Wt_pose);
+    float cam_origin[3] = {
+        -(Wt_pose[0]*cam.t[0] + Wt_pose[1]*cam.t[1] + Wt_pose[2]*cam.t[2]),
+        -(Wt_pose[3]*cam.t[0] + Wt_pose[4]*cam.t[1] + Wt_pose[5]*cam.t[2]),
+        -(Wt_pose[6]*cam.t[0] + Wt_pose[7]*cam.t[1] + Wt_pose[8]*cam.t[2]),
+    };
+
     for (const auto& g : raws) {
         float p[3] = {g.x, g.y, g.z};
         float pc[3];
@@ -286,11 +376,20 @@ static std::vector<ProjGaussian> project_all(const std::vector<RawGaussian>& raw
         float cxy = -b_aa * inv_det;
         float cyy =  a_aa * inv_det;
 
-        const float c0 = 0.28209479f;
+        // SH evaluation (degree 0 or 3). View direction in WORLD space, from
+        // camera origin to gaussian center.
+        float vdx = g.x - cam_origin[0];
+        float vdy = g.y - cam_origin[1];
+        float vdz = g.z - cam_origin[2];
+        float vdn = sqrtf(vdx*vdx + vdy*vdy + vdz*vdz);
+        if (vdn < 1e-8f) vdn = 1e-8f;
+        float vx = vdx / vdn, vy = vdy / vdn, vz = vdz / vdn;
+        float rr, gg, bb;
+        sh_to_rgb(g.f_dc, g.f_rest, vx, vy, vz, &rr, &gg, &bb);
         auto clamp01 = [](float v){ return v < 0.f ? 0.f : (v > 1.f ? 1.f : v); };
-        float col_r = clamp01(c0 * g.f_dc[0] + 0.5f);
-        float col_g = clamp01(c0 * g.f_dc[1] + 0.5f);
-        float col_b = clamp01(c0 * g.f_dc[2] + 0.5f);
+        float col_r = clamp01(rr);
+        float col_g = clamp01(gg);
+        float col_b = clamp01(bb);
         float op = sigmoidf(g.opacity_logit);
 
         if (pc[2] < depth_min) depth_min = pc[2];
@@ -312,6 +411,13 @@ static std::vector<ProjGaussian> project_all(const std::vector<RawGaussian>& raw
 
     std::sort(out.begin(), out.end(),
               [](const ProjGaussian& a, const ProjGaussian& b){ return a.depth < b.depth; });
+
+    // Dump pre-sort per-gaussian colors for cross-check vs CPU SH reference.
+    // (We're inside project_all; we already did std::sort above so the order
+    // is by depth, not PLY-order. To compare to a PLY-ordered CPU reference
+    // we need to dump from a parallel array. We can't, easily, after the
+    // sort. Instead, we emit a separate PLY-ordered color file in main()
+    // by calling sh_to_rgb once per gaussian without going through project.)
 
     std::sort(conic_scales.begin(), conic_scales.end());
     float cs_med = conic_scales.empty() ? 0.0f : conic_scales[conic_scales.size()/2];
@@ -492,6 +598,18 @@ static Timings render_cam(const std::vector<RawGaussian>& raws,
 
     save_ppm(out_ppm, hr, hg, hb, W, H);
     printf("  wrote %s\n", out_ppm.c_str());
+
+    // Dump raw f32 RGB planes for byte-exact cross-impl comparison (cam A only).
+    if (strcmp(label, "camA_minusZ") == 0) {
+        FILE* fr = fopen("output_utsuho_plush_A.f32", "wb");
+        if (fr) {
+            fwrite(hr.data(), 4, hr.size(), fr);
+            fwrite(hg.data(), 4, hg.size(), fr);
+            fwrite(hb.data(), 4, hb.size(), fr);
+            fclose(fr);
+            printf("  wrote output_utsuho_plush_A.f32 (%zu floats)\n", hr.size()*3);
+        }
+    }
 
     cudaFree(d_mx); cudaFree(d_my);
     cudaFree(d_cxx); cudaFree(d_cxy); cudaFree(d_cyy);

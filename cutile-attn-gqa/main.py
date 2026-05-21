@@ -199,12 +199,27 @@ def prepare_2d(q_np: np.ndarray, k_np: np.ndarray, v_np: np.ndarray,
 # Tile-size picker
 # ─────────────────────────────────────────────────────────────────────────────
 
-def pick_blocks(shape: GQAShape) -> tuple[int, int]:
+def pick_blocks(shape: GQAShape, block_m_override: int | None = None,
+                block_n_override: int | None = None) -> tuple[int, int]:
     """Pick (BLOCK_M, BLOCK_N) that divide shape.seq evenly.
 
     For SHAPE_BENCH (seq=2048), 64×64 is the default — 32 Q-blocks, 32 K-blocks.
     For SHAPE_CORRECTNESS (seq=128), use 32×32 — 4 Q-blocks, 4 K-blocks.
+
+    If block_m_override / block_n_override are provided (W2d sweep), use them
+    directly; caller is responsible for checking that they divide shape.seq.
     """
+    if block_m_override is not None or block_n_override is not None:
+        bm = block_m_override if block_m_override is not None else 64
+        bn = block_n_override if block_n_override is not None else bm
+        assert shape.seq % bm == 0, (
+            f"BLOCK_M={bm} does not divide seq={shape.seq}"
+        )
+        assert shape.seq % bn == 0, (
+            f"BLOCK_N={bn} does not divide seq={shape.seq}"
+        )
+        return bm, bn
+
     if shape.seq >= 512:
         return 64, 64
     # small shape
@@ -219,14 +234,15 @@ def pick_blocks(shape: GQAShape) -> tuple[int, int]:
 # Correctness
 # ─────────────────────────────────────────────────────────────────────────────
 
-def run_smoke(shape: GQAShape) -> bool:
+def run_smoke(shape: GQAShape, block_m: int | None = None,
+              block_n: int | None = None) -> bool:
     print(f"[smoke] shape={shape.name} B={shape.batch} S={shape.seq} "
           f"n_q={shape.n_q} n_kv={shape.n_kv} d={shape.d_head}")
     q_np, k_np, v_np, expected = load_inputs(shape)
     q_d, k_d, v_d = prepare_2d(q_np, k_np, v_np, shape)
     o_d = cupy.zeros_like(q_d)
 
-    bm, bn = pick_blocks(shape)
+    bm, bn = pick_blocks(shape, block_m, block_n)
     print(f"[smoke] BLOCK_M={bm} BLOCK_N={bn}")
     kernel = make_gqa_kernel(bm, bn, shape.d_head, shape.seq, shape.n_q, shape.n_kv)
 
@@ -262,14 +278,15 @@ def run_smoke(shape: GQAShape) -> bool:
 # Bench
 # ─────────────────────────────────────────────────────────────────────────────
 
-def run_bench(shape: GQAShape, csv_path: str) -> None:
+def run_bench(shape: GQAShape, csv_path: str, block_m: int | None = None,
+              block_n: int | None = None, iters: int | None = None) -> None:
     print(f"[bench] shape={shape.name} B={shape.batch} S={shape.seq} "
           f"n_q={shape.n_q} n_kv={shape.n_kv} d={shape.d_head}")
     q_np, k_np, v_np, _expected = load_inputs(shape)
     q_d, k_d, v_d = prepare_2d(q_np, k_np, v_np, shape)
     o_d = cupy.zeros_like(q_d)
 
-    bm, bn = pick_blocks(shape)
+    bm, bn = pick_blocks(shape, block_m, block_n)
     print(f"[bench] BLOCK_M={bm} BLOCK_N={bn}")
     kernel = make_gqa_kernel(bm, bn, shape.d_head, shape.seq, shape.n_q, shape.n_kv)
 
@@ -277,6 +294,7 @@ def run_bench(shape: GQAShape, csv_path: str) -> None:
     stream = cupy.cuda.get_current_stream()
 
     flops = gqa_attention_flops(shape)
+    n_iters = iters if iters is not None else ITERS
 
     # Warmup (drops JIT compile + first-launch cost).
     for _ in range(WARMUP):
@@ -284,9 +302,9 @@ def run_bench(shape: GQAShape, csv_path: str) -> None:
     cupy.cuda.runtime.deviceSynchronize()
 
     # Timed iters — tight block.
-    starts = [cupy.cuda.Event() for _ in range(ITERS)]
-    ends = [cupy.cuda.Event() for _ in range(ITERS)]
-    for i in range(ITERS):
+    starts = [cupy.cuda.Event() for _ in range(n_iters)]
+    ends = [cupy.cuda.Event() for _ in range(n_iters)]
+    for i in range(n_iters):
         starts[i].record(stream)
         ct.launch(stream.ptr, grid, kernel, (q_d, k_d, v_d, o_d))
         ends[i].record(stream)
@@ -297,7 +315,7 @@ def run_bench(shape: GQAShape, csv_path: str) -> None:
         w = csv.writer(f)
         w.writerow(["impl", "kernel", "batch", "seq", "n_q", "n_kv",
                     "d_head", "block_m", "block_n", "iter", "gpu_ms", "tflops"])
-        for i in range(ITERS):
+        for i in range(n_iters):
             gpu_ms = cupy.cuda.get_elapsed_time(starts[i], ends[i])
             tflops = flops / (gpu_ms * 1e-3) / 1e12
             print(f"[bench] iter={i} gpu_ms={gpu_ms:.3f} tflops={tflops:.3f}")
@@ -308,8 +326,8 @@ def run_bench(shape: GQAShape, csv_path: str) -> None:
 
     ms_sorted = sorted(r[0] for r in rows)
     tf_sorted = sorted(r[1] for r in rows)
-    median_ms = ms_sorted[ITERS // 2]
-    median_tf = tf_sorted[ITERS // 2]
+    median_ms = ms_sorted[n_iters // 2]
+    median_tf = tf_sorted[n_iters // 2]
     best_ms = ms_sorted[0]
     best_tf = tf_sorted[-1]
     print()
@@ -336,8 +354,10 @@ def _ac(dt):
     )
 
 
-def export_cubin(out_path: str, shape: GQAShape) -> str | None:
-    bm, bn = pick_blocks(shape)
+def export_cubin(out_path: str, shape: GQAShape,
+                 block_m: int | None = None,
+                 block_n: int | None = None) -> str | None:
+    bm, bn = pick_blocks(shape, block_m, block_n)
     kernel = make_gqa_kernel(bm, bn, shape.d_head, shape.seq, shape.n_q, shape.n_kv)
     sig = KernelSignature(
         parameters=[_ac(ct.float16), _ac(ct.float16), _ac(ct.float16), _ac(ct.float16)],
@@ -367,6 +387,15 @@ def main() -> int:
     ap.add_argument("--export-cubin", action="store_true", default=False)
     ap.add_argument("--csv-out", default="results.csv")
     ap.add_argument("--cubin-out", default="gqa_fwd_fused.cubin")
+    # W2d: tile-size sweep — override the auto-picked BLOCK_M/BLOCK_N.
+    # When unset, the legacy pick_blocks heuristic runs (64×64 at bench).
+    ap.add_argument("--block-m", type=int, default=None,
+                    help="Override BLOCK_M (W2d sweep). Must divide shape.seq.")
+    ap.add_argument("--block-n", type=int, default=None,
+                    help="Override BLOCK_N (W2d sweep). Must divide shape.seq. "
+                         "Defaults to BLOCK_M when only --block-m given.")
+    ap.add_argument("--iters", type=int, default=None,
+                    help="Override timed-iter count (default 10).")
     args = ap.parse_args()
 
     # Default: --smoke
@@ -378,11 +407,16 @@ def main() -> int:
     props = cupy.cuda.runtime.getDeviceProperties(0)
     print(f"device: {props['name'].decode()}")
     print(f"compute capability: sm_{props['major']}{props['minor']}")
+    if args.block_m is not None or args.block_n is not None:
+        print(f"[W2d] tile override: BLOCK_M={args.block_m} BLOCK_N={args.block_n}")
     print()
 
     rc = 0
     if args.smoke:
-        ok = run_smoke(SHAPE_CORRECTNESS)
+        # SHAPE_CORRECTNESS has seq=128. If user specifies a BLOCK_M that
+        # doesn't divide 128 (e.g. 256), pick_blocks will assert. Caller
+        # (sweep_block_m.py) handles that by routing 256 to compile-only.
+        ok = run_smoke(SHAPE_CORRECTNESS, args.block_m, args.block_n)
         if not ok:
             rc = 1
         print()
@@ -390,12 +424,13 @@ def main() -> int:
     if args.bench:
         # Run smoke first as sanity, but at bench shape that's slow;
         # trust --smoke already ran if we got here from run.sh.
-        run_bench(SHAPE_BENCH, args.csv_out)
+        run_bench(SHAPE_BENCH, args.csv_out, args.block_m, args.block_n,
+                  args.iters)
         print()
 
     if args.export_cubin:
         print("Exporting cubin at bench shape for SASS inspection…")
-        export_cubin(args.cubin_out, SHAPE_BENCH)
+        export_cubin(args.cubin_out, SHAPE_BENCH, args.block_m, args.block_n)
 
     return rc
 

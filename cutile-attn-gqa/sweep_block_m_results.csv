@@ -1,0 +1,4 @@
+block_m,block_n,correctness_status,compile_status,notes
+64,64,PASS,OK,cubin gqa_fwd_fused_bm64.cubin (483232 bytes) | HMMA=256 LDL=137 STL=100 (spill)
+128,64,PASS,OK,cubin gqa_fwd_fused_bm128.cubin (449024 bytes) | HMMA=256 LDL=222 STL=270 (spill)
+256,64,SKIP,OK,seq=128 not divisible by BLOCK_M=256; compile-only at bench shape | cubin gqa_fwd_fused_bm256.cubin (761816 bytes) | HMMA=512 LDL=1153 STL=879 (spill)
