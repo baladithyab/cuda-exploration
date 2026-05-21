@@ -1,0 +1,166 @@
+=========================================
+RUSTC-CODEGEN-CUDA: oxide-attn-gdn
+=========================================
+
+This is the proper cargo workflow:
+  RUSTFLAGS="-Z codegen-backend=..." cargo run
+
+Building and running oxide-attn-gdn...
+
+   Compiling oxide-attn-gdn v0.1.0 (/home/codeseys/cuda-exploration/oxide-attn-gdn)
+warning: unnecessary `unsafe` block
+   --> src/main.rs:161:18
+    |
+161 |         let so = unsafe { core::intrinsics::fmuladdf32(bk, r_j, s_scaled[jj2]) };
+    |                  ^^^^^^ unnecessary `unsafe` block
+    |
+    = note: `#[warn(unused_unsafe)]` (part of `#[warn(unused)]`) on by default
+
+warning: unnecessary `unsafe` block
+   --> src/main.rs:292:18
+    |
+292 |         let so = unsafe { core::intrinsics::fmuladdf32(bk, r_j, s_scaled[jj2]) };
+    |                  ^^^^^^ unnecessary `unsafe` block
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk256::AB` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:236:18
+    |
+236 |         unsafe { AB[0] = alpha[bh]; }
+    |                  ^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk256::AB` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:239:18
+    |
+239 |         unsafe { AB[1] = beta[bh]; }
+    |                  ^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk256::K_SH` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:245:9
+    |
+245 |         K_SH[tid] = k_t;
+    |         ^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk256::Q_SH` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:246:9
+    |
+246 |         Q_SH[tid] = q_t;
+    |         ^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk256::AB` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:249:28
+    |
+249 |     let alpha_v = unsafe { AB[0] };
+    |                            ^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk256::PROD` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:265:13
+    |
+265 |             PROD[tid] = k_t * s_scaled[jj];
+    |             ^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk256::UVEC` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:279:22
+    |
+279 |             unsafe { UVEC[jj] = PROD[0]; }
+    |                      ^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk256::UVEC` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:290:28
+    |
+290 |         let u_j = unsafe { UVEC[jj2] };
+    |                            ^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk256::PROD` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:300:13
+    |
+300 |             PROD[tid] = q_t * s_out_row[jj3];
+    |             ^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk256::OVEC` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:314:22
+    |
+314 |             unsafe { OVEC[jj3] = PROD[0]; }
+    |                      ^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk256::OVEC` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:331:52
+    |
+331 |             *o_ptr.add(bh * 256 + bv_col0 + tid) = OVEC[tid];
+    |                                                    ^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk64::AB` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+  --> src/main.rs:96:18
+   |
+96 |         unsafe { AB[0] = alpha[bh]; }
+   |                  ^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk64::AB` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+  --> src/main.rs:99:18
+   |
+99 |         unsafe { AB[1] = beta[bh]; }
+   |                  ^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk64::K_SH` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:105:9
+    |
+105 |         K_SH[tid] = k_t;
+    |         ^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk64::Q_SH` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:106:9
+    |
+106 |         Q_SH[tid] = q_t;
+    |         ^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk64::AB` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:109:28
+    |
+109 |     let alpha_v = unsafe { AB[0] };
+    |                            ^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk64::PROD` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:130:13
+    |
+130 |             PROD[tid] = k_t * s_scaled[jj];
+    |             ^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk64::UVEC` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:145:22
+    |
+145 |             unsafe { UVEC[jj] = PROD[0]; }
+    |                      ^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk64::UVEC` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:158:28
+    |
+158 |         let u_j = unsafe { UVEC[jj2] };
+    |                            ^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk64::PROD` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:170:13
+    |
+170 |             PROD[tid] = q_t * s_out_row[jj3];
+    |             ^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk64::OVEC` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:184:22
+    |
+184 |             unsafe { OVEC[jj3] = PROD[0]; }
+    |                      ^^^^
+
+warning: `static mut cuda_oxide_kernel_246e25db_gdn_decode_dk64::OVEC` uses `SharedArray`, which cuda-oxide lowers to per-block CUDA shared memory, not persistent device global memory
+   --> src/main.rs:204:51
+    |
+204 |             *o_ptr.add(bh * 64 + bv_col0 + tid) = OVEC[tid];
+    |                                                   ^^^^
+
+warning: `oxide-attn-gdn` (bin "oxide-attn-gdn") generated 24 warnings
+    Finished `release` profile [optimized] target(s) in 0.70s
+     Running `target/release/oxide-attn-gdn`
+[oxide-attn-gdn] Wave 17 W1d — cuda-oxide GDN decode (f32, no-TC)
+[oxide-attn-gdn] GPU: RTX 5090 sm_120, correctness-only run
+[oxide-attn-gdn] shape=correctness (B=2 H=4 d_k=64 d_v=64) state_MB=0.13
+[oxide-attn-gdn] correctness correctness: max_abs(o)=1.598e-4 max_abs(S_out)=2.412e-4 (tol=0.001) -> OK
+[oxide-attn-gdn] shape=qwen3_next_decode (B=1 H=16 d_k=256 d_v=256) state_MB=4.19
+[oxide-attn-gdn] qwen3_next_decode correctness: max_abs(o)=1.677e-4 max_abs(S_out)=1.585e-4 (tol=0.001) -> OK
+[oxide-attn-gdn] results.csv written

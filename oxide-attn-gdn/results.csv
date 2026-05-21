@@ -1,0 +1,5 @@
+impl,shape,kind,metric,value
+oxide-attn-gdn,correctness,correctness,max_abs_o,1.597553e-4
+oxide-attn-gdn,correctness,correctness,max_abs_S_out,2.412051e-4
+oxide-attn-gdn,qwen3_next_decode,correctness,max_abs_o,1.677275e-4
+oxide-attn-gdn,qwen3_next_decode,correctness,max_abs_S_out,1.584701e-4
