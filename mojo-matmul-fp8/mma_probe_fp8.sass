@@ -1,0 +1,154 @@
+GPU:  NVIDIA GeForce RTX 5090
+	.target	sm_120a
+
+	.elftype	@"ET_EXEC"
+
+
+//--------------------- .text.mma_probe_fp8_mma_probe_fp8_ker6A6A_2200df24b2a9b84f --------------------------
+	.section	.text.mma_probe_fp8_mma_probe_fp8_ker6A6A_2200df24b2a9b84f,"ax",@progbits
+	.align	128
+        .global         mma_probe_fp8_mma_probe_fp8_ker6A6A_2200df24b2a9b84f
+        .type           mma_probe_fp8_mma_probe_fp8_ker6A6A_2200df24b2a9b84f,@function
+        .size           mma_probe_fp8_mma_probe_fp8_ker6A6A_2200df24b2a9b84f,(.L_x_1 - mma_probe_fp8_mma_probe_fp8_ker6A6A_2200df24b2a9b84f)
+        .other          mma_probe_fp8_mma_probe_fp8_ker6A6A_2200df24b2a9b84f,@"STO_CUDA_ENTRY STV_DEFAULT"
+mma_probe_fp8_mma_probe_fp8_ker6A6A_2200df24b2a9b84f:
+.text.mma_probe_fp8_mma_probe_fp8_ker6A6A_2200df24b2a9b84f:
+        /*0000*/                   LDC R1, c[0x0][0x37c] ;
+        /*0010*/                   S2R R0, SR_TID.X ;
+        /*0020*/                   LDCU.64 UR4, c[0x0][0x358] ;
+        /*0030*/                   I2FP.F32.U32 R2, R0 ;
+        /*0040*/                   FMUL R6, R2.reuse, 0.11999999731779098511 ;
+        /*0050*/                   FMUL R5, R2.reuse, 0.10999999940395355225 ;
+        /*0060*/                   FMUL R4, R2.reuse, 0.10000000149011611938 ;
+        /*0070*/                   FMUL R3, R2.reuse, 0.090000003576278686523 ;
+        /*0080*/                   FMUL R8, R2.reuse, 0.14000000059604644775 ;
+        /*0090*/                   FMUL R7, R2.reuse, 0.12999999523162841797 ;
+        /*00a0*/                   FMUL R10, R2.reuse, 0.15999999642372131348 ;
+        /*00b0*/                   FMUL R9, R2.reuse, 0.15000000596046447754 ;
+        /*00c0*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R6, RZ, R6, RZ ;
+        /*00d0*/                   FMUL R14, R2.reuse, 0.23999999463558197021 ;
+        /*00e0*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R5, RZ, R5, RZ ;
+        /*00f0*/                   FMUL R12, R2.reuse, 0.21999999880790710449 ;
+        /*0100*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R4, RZ, R4, RZ ;
+        /*0110*/                   FMUL R18, R2.reuse, 0.28000000119209289551 ;
+        /*0120*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R3, RZ, R3, RZ ;
+        /*0130*/                   FMUL R17, R2.reuse, 0.27000001072883605957 ;
+        /*0140*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R8, RZ, R8, RZ ;
+        /*0150*/                   FMUL R16, R2, 0.25999999046325683594 ;
+        /*0160*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R7, RZ, R7, RZ ;
+        /*0170*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R10, RZ, R10, RZ ;
+        /*0180*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R9, RZ, R9, RZ ;
+        /*0190*/                   LOP3.LUT R6, R6, 0xffff, RZ, 0xc0, !PT ;
+        /*01a0*/                   LOP3.LUT R5, R5, 0xffff, RZ, 0xc0, !PT ;
+        /*01b0*/                   LOP3.LUT R4, R4, 0xffff, RZ, 0xc0, !PT ;
+        /*01c0*/                   LOP3.LUT R11, R3, 0xffff, RZ, 0xc0, !PT ;
+        /*01d0*/                   LOP3.LUT R8, R8, 0xffff, RZ, 0xc0, !PT ;
+        /*01e0*/                   LOP3.LUT R13, R7, 0xffff, RZ, 0xc0, !PT ;
+        /*01f0*/                   LOP3.LUT R10, R10, 0xffff, RZ, 0xc0, !PT ;
+        /*0200*/                   LOP3.LUT R9, R9, 0xffff, RZ, 0xc0, !PT ;
+        /*0210*/                   PRMT R3, R5, 0x3340, R6 ;
+        /*0220*/                   FMUL R5, R2.reuse, 0.0099999997764825820923 ;
+        /*0230*/                   PRMT R6, R11, 0x3340, R4 ;
+        /*0240*/                   FMUL R11, R2.reuse, 0.20999999344348907471 ;
+        /*0250*/                   PRMT R4, R13, 0x3340, R8 ;
+        /*0260*/                   FMUL R13, R2.reuse, 0.23000000417232513428 ;
+        /*0270*/                   PRMT R7, R9, 0x3340, R10 ;
+        /*0280*/                   FMUL R10, R2.reuse, 0.039999999105930328369 ;
+        /*0290*/                   FMUL R9, R2.reuse, 0.029999999329447746277 ;
+        /*02a0*/                   FMUL R8, R2, 0.019999999552965164185 ;
+        /*02b0*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R15, RZ, R14, RZ ;
+        /*02c0*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R14, RZ, R13, RZ ;
+        /*02d0*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R10, RZ, R10, RZ ;
+        /*02e0*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R9, RZ, R9, RZ ;
+        /*02f0*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R13, RZ, R12, RZ ;
+        /*0300*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R8, RZ, R8, RZ ;
+        /*0310*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R5, RZ, R5, RZ ;
+        /*0320*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R12, RZ, R11, RZ ;
+        /*0330*/                   LOP3.LUT R10, R10, 0xffff, RZ, 0xc0, !PT ;
+        /*0340*/                   LOP3.LUT R9, R9, 0xffff, RZ, 0xc0, !PT ;
+        /*0350*/                   LOP3.LUT R8, R8, 0xffff, RZ, 0xc0, !PT ;
+        /*0360*/                   LOP3.LUT R11, R5, 0xffff, RZ, 0xc0, !PT ;
+        /*0370*/                   LOP3.LUT R15, R15, 0xffff, RZ, 0xc0, !PT ;
+        /*0380*/                   LOP3.LUT R14, R14, 0xffff, RZ, 0xc0, !PT ;
+        /*0390*/                   LOP3.LUT R13, R13, 0xffff, RZ, 0xc0, !PT ;
+        /*03a0*/                   LOP3.LUT R12, R12, 0xffff, RZ, 0xc0, !PT ;
+        /*03b0*/                   PRMT R5, R9, 0x3340, R10 ;
+        /*03c0*/                   PRMT R8, R11, 0x3340, R8 ;
+        /*03d0*/                   FMUL R11, R2, 0.050000000745058059692 ;
+        /*03e0*/                   PRMT R9, R14, 0x3340, R15 ;
+        /*03f0*/                   FMUL R14, R2, 0.079999998211860656738 ;
+        /*0400*/                   PRMT R10, R12, 0x3340, R13 ;
+        /*0410*/                   FMUL R13, R2.reuse, 0.070000000298023223877 ;
+        /*0420*/                   FMUL R12, R2.reuse, 0.059999998658895492554 ;
+        /*0430*/                   FMUL R15, R2, 0.25 ;
+        /*0440*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R14, RZ, R14, RZ ;
+        /*0450*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R13, RZ, R13, RZ ;
+        /*0460*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R12, RZ, R12, RZ ;
+        /*0470*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R11, RZ, R11, RZ ;
+        /*0480*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R18, RZ, R18, RZ ;
+        /*0490*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R17, RZ, R17, RZ ;
+        /*04a0*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R16, RZ, R16, RZ ;
+        /*04b0*/                   F2FP.SATFINITE.E4M3.F32.PACK_AB_MERGE_C R15, RZ, R15, RZ ;
+        /*04c0*/                   LOP3.LUT R14, R14, 0xffff, RZ, 0xc0, !PT ;
+        /*04d0*/                   LOP3.LUT R13, R13, 0xffff, RZ, 0xc0, !PT ;
+        /*04e0*/                   LOP3.LUT R12, R12, 0xffff, RZ, 0xc0, !PT ;
+        /*04f0*/                   LOP3.LUT R11, R11, 0xffff, RZ, 0xc0, !PT ;
+        /*0500*/                   LOP3.LUT R18, R18, 0xffff, RZ, 0xc0, !PT ;
+        /*0510*/                   LOP3.LUT R17, R17, 0xffff, RZ, 0xc0, !PT ;
+        /*0520*/                   LOP3.LUT R16, R16, 0xffff, RZ, 0xc0, !PT ;
+        /*0530*/                   LOP3.LUT R15, R15, 0xffff, RZ, 0xc0, !PT ;
+        /*0540*/                   PRMT R13, R13, 0x3340, R14 ;
+        /*0550*/                   FMUL R14, R2, 0.00030000001424923539162 ;
+        /*0560*/                   PRMT R12, R11, 0x3340, R12 ;
+        /*0570*/                   PRMT R17, R17, 0x3340, R18 ;
+        /*0580*/                   PRMT R16, R15, 0x3340, R16 ;
+        /*0590*/                   FMUL R15, R2, 0.00039999998989515006542 ;
+        /*05a0*/                   PRMT R7, R4, 0x5410, R7 ;
+        /*05b0*/                   PRMT R4, R8, 0x5410, R5 ;
+        /*05c0*/                   PRMT R5, R12, 0x5410, R13 ;
+        /*05d0*/                   FMUL R12, R2, 9.9999997473787516356e-05 ;
+        /*05e0*/                   PRMT R10, R10, 0x5410, R9 ;
+        /*05f0*/                   FMUL R13, R2, 0.00019999999494757503271 ;
+        /*0600*/                   PRMT R11, R16, 0x5410, R17 ;
+        /*0610*/                   IMAD.SHL.U32 R9, R0, 0x4, RZ ;
+        /*0620*/                   PRMT R6, R6, 0x5410, R3 ;
+        /*0630*/                   LDC.64 R2, c[0x0][0x380] ;
+        /*0640*/                   QMMA.16832.F32.E4M3.E4M3 R4, R4, R10, R12 ;
+        /*0650*/                   IMAD.WIDE.U32 R2, R9, 0x4, R2 ;
+        /*0660*/                   @!UPT UIADD3 URZ, UPT, UPT, URZ, URZ, URZ ;
+        /*0670*/                   @!UPT UIADD3 URZ, UPT, UPT, URZ, URZ, URZ ;
+        /*0680*/                   STG.E desc[UR4][R2.64], R4 ;
+        /*0690*/                   STG.E desc[UR4][R2.64+0x4], R5 ;
+        /*06a0*/                   STG.E desc[UR4][R2.64+0x8], R6 ;
+        /*06b0*/                   STG.E desc[UR4][R2.64+0xc], R7 ;
+        /*06c0*/                   EXIT ;
+.L_x_0:
+        /*06d0*/                   BRA `(.L_x_0);
+        /*06e0*/                   NOP;
+        /*06f0*/                   NOP;
+        /*0700*/                   NOP;
+        /*0710*/                   NOP;
+        /*0720*/                   NOP;
+        /*0730*/                   NOP;
+        /*0740*/                   NOP;
+        /*0750*/                   NOP;
+        /*0760*/                   NOP;
+        /*0770*/                   NOP;
+.L_x_1:
+
+
+//--------------------- SYMBOLS --------------------------
+
+	.type		.nv.reservedSmem.offset0,@object
+	.size		.nv.reservedSmem.offset0,0x4
+[mma-probe-fp8] First 8 of 128 output floats:
+  out[ 0 ] =  1.9143677
+  out[ 1 ] =  5.2145996
+  out[ 2 ] =  2.925354
+  out[ 3 ] =  7.98584
+  out[ 4 ] =  8.444679
+  out[ 5 ] =  11.767777
+  out[ 6 ] =  12.968561
+  out[ 7 ] =  18.055086
+[mma-probe-fp8] If you see HMMA.16832.F32.E4M3 in stderr SASS dump,
+           the e4m3 FP8 MMA path engaged on sm_120. Done.

@@ -1,0 +1,13 @@
+[gdn-tma-bench] device: NVIDIA GeForce RTX 5090 (sm_120)
+[gdn-tma-bench] shape=qwen3_next_decode B=1 H=16 d_k=256 d_v=256  warmup=2 iters=50
+[gdn-tma-bench] bytes/iter = 8224.06 KB
+[gdn-tma-bench] iter=0 gpu_ms=0.0238 gbps=353.7
+[gdn-tma-bench] iter=1 gpu_ms=0.0094 gbps=898.2
+[gdn-tma-bench] iter=2 gpu_ms=0.0103 gbps=814.8
+[gdn-tma-bench] iter=49 gpu_ms=0.0089 gbps=943.3
+
+[gdn-tma-bench] ===== SUMMARY =====
+[gdn-tma-bench] best  gpu_us=8.16 gbps=1032.0
+[gdn-tma-bench] mean  gpu_us=9.49 gbps=887.6
+[gdn-tma-bench] W1c reference: 417.7 GB/s; cuTile: 610 GB/s; W22.9 async: 245 GB/s
+[gdn-tma-bench] HBM peak (RTX 5090): 1792 GB/s

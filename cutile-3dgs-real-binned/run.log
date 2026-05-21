@@ -1,0 +1,38 @@
+cuda-tile version: 1.3.0
+cupy: 14.0.1
+device: NVIDIA GeForce RTX 5090
+compute capability: sm_120
+image: 800×800, BS=16, grid=(50, 50)
+
+Loading /home/codeseys/cuda-exploration/oxide-3dgs-real/scenes/utsuho_plush.ply
+PLY header: 53671 vertices, 62 float props
+SH support: degree 3 (16 coefs/channel)
+Parsed 53671 gaussians
+Scene centroid: (0.179, 0.123, 0.179)
+Scene diag   : 7.790
+Building cuTile kernel (binned)...
+
+=== SMOKE: cam A correctness ===
+=== [camA_minusZ] ===
+  projected gaussians: 53671
+  bin build: 167.376 ms (CPU)
+    n_visible           : 53671/53671
+    n_tiles             : 2500
+    total (g,tile) pairs: 234113
+    mean per tile       : 93.6
+    max per tile (seen) : 4466
+    overflow tiles      : 2 (cap=4096, dropped=717)
+  H2D copy: 145.429 ms
+  kernel iter 0: 4.989 ms
+  median kernel time: 4.989 ms
+  nonzero pixels: 42062/640000 = 6.57%
+  wrote output_utsuho_plush_A.ppm
+
+=== CORRECTNESS DIFF vs cuda-3dgs-real cam A ===
+  pixels         : 640000
+  pixels w/ diff : 447 (0.07%)
+  pixels w/ diff>2: 0 (0.00%)
+  pixels w/ diff>5: 0 (0.00%)
+  max u8 diff    : 1
+  mean u8 diff   : 0.0002
+  RESULT: PASS (max diff ≤ 2)
