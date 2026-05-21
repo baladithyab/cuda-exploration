@@ -114,7 +114,8 @@ Vision: ship a comprehensive, third-party-citeable evaluation of NVlabs/cuda-oxi
 ### Wave 17+ in flight
 
 - 🚧 **Wave 17 (research grounded, ADRs landed)**: KDA + oxide-MLA + GDN-other-frontends. See `docs/plans/wave-17.md`.
-- 📋 **Wave 18 (research grounded, plan ready, pending sign-off)**: Mojo as a fifth frontend column. See `docs/plans/wave-18.md` and `docs/research/wave18-mojo-frontend.md`. Phased serial-then-parallel rollout (Phase A toolchain smoke test → Phase B memory-bound → Phase C compute-bound → Phase D conditional attention). Critical sm_120 question: does Mojo emit `mma.sync` for tensor cores, or is it gated to sm_100a-only tcgen05 like the MAX flagship matmul (issue #5707, PR #6059)?
+- ✅ **Wave 18 Phase A+B SHIPPED 2026-05-20**: Mojo as a fifth frontend column, memory-bound axis. Commits `8d82d33` (research+plan), `8f70304` (Phase A toolchain smoke), `c111230` (Phase B vecadd-bench + reduction with SASS). Headline finding: Mojo joins the warp-shuffle club, NOT the TMA club — `block.sum` lowers to warp-shuffle (parity with nvcc/oxide at 1502 GB/s on N=256M reduction), 12% behind cuTile's TMA path. See `results/wave18-summary.md` and `mojo-reduction/ANALYSIS.md`.
+- 📋 **Wave 19 candidate**: Mojo Phase C (compute-bound) — `mojo-matmul/` naive f32 + `mojo-matmul-tiled/` microtile + conditional `mojo-matmul-mixed/` for f16 TC engagement. The hard question: can Mojo emit `mma.sync.m16n8k16` for tensor cores on sm_120, or is it stuck at the same naive-FMA ceiling cuda-oxide hit (45 TF f32)? Prior is "no TC on sm_120 today" given the tcgen05/sm_100a gating in MAX flagship matmul (issue #5707, PR #6059).
 
 ## Wave plan (legacy, original Wave 1-3 outline)
 

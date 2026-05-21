@@ -1,9 +1,11 @@
 # Wave 18 plan — Mojo as a fifth GPU frontend
 
-**Status:** ready for execution (pending user sign-off)
+**Status:** Phase A + Phase B COMPLETE (memory-bound axis shipped). Phase C (compute-bound) deferred to Wave 19. Phase D (attention) conditional on Wave 19 outcome.
 **Created:** 2026-05-20
+**Updated:** 2026-05-20 (post-execution; Phase A+B landed in commits `8f70304` and `c111230`)
 **Predecessor:** Wave 17 in flight; Wave 18 is independent (different folders, different toolchain)
 **Research grounding:** [docs/research/wave18-mojo-frontend.md](../research/wave18-mojo-frontend.md)
+**Summary doc:** [results/wave18-summary.md](../../results/wave18-summary.md)
 
 ## Goal
 
