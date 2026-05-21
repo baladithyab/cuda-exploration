@@ -46,6 +46,7 @@ use cuda_host::{cuda_launch, load_kernel_module};
 use std::fs::File;
 use std::io::{BufWriter, Read, Write};
 use std::path::Path;
+use std::time::Instant;
 
 const BV: usize = 32;
 
@@ -710,7 +711,255 @@ fn run_shape(
     }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Bench harness (Wave 22.6)
+// ─────────────────────────────────────────────────────────────────────────────
+//
+// Mirrors cuda-attn-gdn/bench.cu: 50 timed iters of the qwen3_next_decode
+// shape kernel with cudaEvent timing per-iter, GB/s = bytes_per_iter/iter_ms.
+//
+// CudaEvent gotchas (cuda-oxide v0.1.0):
+//   - new_event lives on CudaContext, NOT CudaStream. Must call
+//     ctx.new_event(Some(sys::CUevent_flags_enum_CU_EVENT_DEFAULT)).
+//   - record(&stream) takes a stream reference (Arc<CudaStream> deref'd).
+//   - elapsed_ms(&end_event) returns f32, returned in milliseconds.
+//   - Must stream.synchronize() before calling elapsed_ms or it can race.
+//   - The ctx must be bound to the calling thread for any raw driver calls
+//     (upload_f32 already handles this); event APIs are safe through stream.
+//
+// Bytes/iter for qwen3_next_decode (B=1, H=16, d_k=256, d_v=256), matching
+// cuda-attn-gdn/bench.cu's formula EXACTLY so GB/s is comparable across cells:
+//   state_bytes = 2 * d_k * d_v * 4         (S_in read + S_out write, f32)
+//   io_bytes    = (2*d_k + 2*d_v + 2) * 2   (q,k,v,alpha,beta,o sized as f16)
+//   bytes_per_iter = (B*H) * (state_bytes + io_bytes)
+// → 16 * (524288 + 2052) = 8 421 440 B = 8224.0625 KB.
+//
+// We use the f16-sized io formula even though oxide kernel reads/writes f32
+// for those tensors: the headline GB/s is meant to be HBM-bound state
+// movement (98% of bytes/iter), and we want apples-to-apples comparison
+// with cuda-attn-gdn. The state dominates; small-vector io diff is < 0.05%.
+fn run_bench(
+    shape: &Shape,
+    ctx: &std::sync::Arc<CudaContext>,
+    stream: &std::sync::Arc<cuda_core::CudaStream>,
+    module: &std::sync::Arc<cuda_core::CudaModule>,
+    csv: &mut BufWriter<File>,
+    iters: usize,
+    warmup: usize,
+) {
+    let inputs_dir =
+        "/home/codeseys/cuda-exploration/analysis/wave15-attention-architecture/inputs";
+    let q_path = format!("{}/gdn_{}_q_f32.npy", inputs_dir, shape.name);
+    let k_path = format!("{}/gdn_{}_k_f32.npy", inputs_dir, shape.name);
+    let v_path = format!("{}/gdn_{}_v_f32.npy", inputs_dir, shape.name);
+    let alpha_path = format!("{}/gdn_{}_alpha_f32.npy", inputs_dir, shape.name);
+    let beta_path = format!("{}/gdn_{}_beta_f32.npy", inputs_dir, shape.name);
+    let s_in_path = format!("{}/gdn_{}_S_in_f32.npy", inputs_dir, shape.name);
+
+    if !Path::new(&q_path).exists() {
+        panic!(
+            "missing input {}. Run pytorch_reference_gdn.py to regenerate.",
+            q_path
+        );
+    }
+
+    let q_host = load_npy(&q_path).as_f32();
+    let k_host = load_npy(&k_path).as_f32();
+    let v_host = load_npy(&v_path).as_f32();
+    let alpha_host = load_npy(&alpha_path).as_f32();
+    let beta_host = load_npy(&beta_path).as_f32();
+    let s_in_host = load_npy(&s_in_path).as_f32();
+
+    let bh = shape.batch * shape.n_heads;
+    let s_elems = bh * shape.d_k * shape.d_v;
+    let o_elems = bh * shape.d_v;
+
+    let q_dev = DeviceBuffer::from_host(stream, &q_host).unwrap();
+    let k_dev = DeviceBuffer::from_host(stream, &k_host).unwrap();
+    let v_dev = DeviceBuffer::from_host(stream, &v_host).unwrap();
+    let alpha_dev = DeviceBuffer::from_host(stream, &alpha_host).unwrap();
+    let beta_dev = DeviceBuffer::from_host(stream, &beta_host).unwrap();
+    let s_in_dev = DeviceBuffer::from_host(stream, &s_in_host).unwrap();
+    let mut s_out_dev = DeviceBuffer::<f32>::zeroed(stream, s_elems).unwrap();
+    let mut o_dev = DeviceBuffer::<f32>::zeroed(stream, o_elems).unwrap();
+
+    upload_f32(stream, &q_dev, &q_host);
+    upload_f32(stream, &k_dev, &k_host);
+    upload_f32(stream, &v_dev, &v_host);
+    upload_f32(stream, &alpha_dev, &alpha_host);
+    upload_f32(stream, &beta_dev, &beta_host);
+    upload_f32(stream, &s_in_dev, &s_in_host);
+
+    let cfg = LaunchConfig {
+        grid_dim: (bh as u32, (shape.d_v / BV) as u32, 1),
+        block_dim: (shape.d_k as u32, 1, 1),
+        shared_mem_bytes: 0,
+    };
+    let d_k_u = shape.d_k as u32;
+    let d_v_u = shape.d_v as u32;
+
+    // Bytes per iter (matches cuda-attn-gdn/bench.cu formula).
+    let state_bytes = 2.0_f64 * (shape.d_k as f64) * (shape.d_v as f64) * 4.0;
+    let io_bytes = (2.0 * shape.d_k as f64 + 2.0 * shape.d_v as f64 + 2.0) * 2.0;
+    let bytes_per_iter = (bh as f64) * (state_bytes + io_bytes);
+    println!(
+        "[oxide-attn-gdn] [bench] shape={} B={} H={} d_k={} d_v={}  warmup={} iters={}",
+        shape.name, shape.batch, shape.n_heads, shape.d_k, shape.d_v, warmup, iters
+    );
+    println!(
+        "[oxide-attn-gdn] [bench] bytes/iter = {:.2} KB",
+        bytes_per_iter / 1024.0
+    );
+
+    // Launch helper macro-equivalent (kept inline to avoid closure-vs-macro
+    // capture issues with cuda_launch! reborrow rules).
+    let do_launch = |s_out_ref: &mut DeviceBuffer<f32>, o_ref: &mut DeviceBuffer<f32>| {
+        let mut s_out_mut = s_out_ref;
+        let mut o_mut = o_ref;
+        let s = stream.clone();
+        let m = module.clone();
+        if shape.d_k == 64 {
+            cuda_launch! {
+                kernel: gdn_decode_dk64,
+                stream: s,
+                module: m,
+                config: cfg,
+                args: [
+                    slice(&q_dev),
+                    slice(&k_dev),
+                    slice(&v_dev),
+                    slice(&alpha_dev),
+                    slice(&beta_dev),
+                    slice(&s_in_dev),
+                    slice_mut(s_out_mut),
+                    slice_mut(o_mut),
+                    d_k_u,
+                    d_v_u
+                ]
+            }
+            .unwrap();
+        } else {
+            cuda_launch! {
+                kernel: gdn_decode_dk256,
+                stream: s,
+                module: m,
+                config: cfg,
+                args: [
+                    slice(&q_dev),
+                    slice(&k_dev),
+                    slice(&v_dev),
+                    slice(&alpha_dev),
+                    slice(&beta_dev),
+                    slice(&s_in_dev),
+                    slice_mut(s_out_mut),
+                    slice_mut(o_mut),
+                    d_k_u,
+                    d_v_u
+                ]
+            }
+            .unwrap();
+        }
+    };
+
+    // Warmup
+    for _ in 0..warmup {
+        do_launch(&mut s_out_dev, &mut o_dev);
+    }
+    stream.synchronize().unwrap();
+
+    // Timed iters with cudaEvent per-iter.
+    let mut times_ms: Vec<f64> = Vec::with_capacity(iters);
+    for i in 0..iters {
+        let ev_a = ctx
+            .new_event(Some(sys::CUevent_flags_enum_CU_EVENT_DEFAULT))
+            .unwrap();
+        let ev_b = ctx
+            .new_event(Some(sys::CUevent_flags_enum_CU_EVENT_DEFAULT))
+            .unwrap();
+
+        let cpu_t0 = Instant::now();
+        ev_a.record(stream).unwrap();
+        do_launch(&mut s_out_dev, &mut o_dev);
+        ev_b.record(stream).unwrap();
+        stream.synchronize().unwrap();
+        let cpu_ms = cpu_t0.elapsed().as_secs_f64() * 1000.0;
+        let gpu_ms = ev_a.elapsed_ms(&ev_b).unwrap() as f64;
+        let gbps = bytes_per_iter / (gpu_ms * 1e-3) / 1e9;
+        times_ms.push(gpu_ms);
+        if i < 3 || i == iters - 1 {
+            println!(
+                "[oxide-attn-gdn] [bench] iter={} gpu_ms={:.4} cpu_ms={:.4} gbps={:.1}",
+                i, gpu_ms, cpu_ms, gbps
+            );
+        }
+        writeln!(
+            csv,
+            "oxide-attn-gdn,{},bench,{},{:.6},{:.3}",
+            shape.name, i, gpu_ms, gbps
+        )
+        .unwrap();
+    }
+
+    // Summary
+    if !times_ms.is_empty() {
+        let mut sorted = times_ms.clone();
+        sorted.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        let best = sorted[0];
+        let med = sorted[sorted.len() / 2];
+        let mean = times_ms.iter().sum::<f64>() / times_ms.len() as f64;
+        let best_gbps = bytes_per_iter / (best * 1e-3) / 1e9;
+        let med_gbps = bytes_per_iter / (med * 1e-3) / 1e9;
+        let mean_gbps = bytes_per_iter / (mean * 1e-3) / 1e9;
+        println!("[oxide-attn-gdn] [bench] ===== SUMMARY =====");
+        println!(
+            "[oxide-attn-gdn] [bench] best gpu_ms={:.4} ({:.1} GB/s)",
+            best, best_gbps
+        );
+        println!(
+            "[oxide-attn-gdn] [bench] med  gpu_ms={:.4} ({:.1} GB/s)",
+            med, med_gbps
+        );
+        println!(
+            "[oxide-attn-gdn] [bench] mean gpu_ms={:.4} ({:.1} GB/s)",
+            mean, mean_gbps
+        );
+        println!("[oxide-attn-gdn] [bench] HBM peak (RTX 5090): 1792 GB/s");
+        writeln!(
+            csv,
+            "oxide-attn-gdn,{},bench_summary,best_ms,{:.6}",
+            shape.name, best
+        )
+        .unwrap();
+        writeln!(
+            csv,
+            "oxide-attn-gdn,{},bench_summary,best_gbps,{:.3}",
+            shape.name, best_gbps
+        )
+        .unwrap();
+        writeln!(
+            csv,
+            "oxide-attn-gdn,{},bench_summary,median_gbps,{:.3}",
+            shape.name, med_gbps
+        )
+        .unwrap();
+        writeln!(
+            csv,
+            "oxide-attn-gdn,{},bench_summary,mean_gbps,{:.3}",
+            shape.name, mean_gbps
+        )
+        .unwrap();
+    }
+}
+
 fn main() {
+    // Bench mode: enable via `--bench` CLI flag OR env var BENCH=1.
+    // When enabled, runs correctness on both shapes (cheap), then 50 timed
+    // iters of the qwen3_next_decode shape with cudaEvent per-iter timing.
+    let bench_mode = std::env::args().any(|a| a == "--bench")
+        || std::env::var("BENCH")
+            .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
+            .unwrap_or(false);
+
     let ctx = CudaContext::new(0).expect("ctx");
     let stream = ctx.default_stream();
     let module = load_kernel_module(&ctx, "oxide_attn_gdn").expect("load module");
@@ -721,10 +970,28 @@ fn main() {
     writeln!(&mut csv, "impl,shape,kind,metric,value").unwrap();
 
     println!("[oxide-attn-gdn] Wave 17 W1d — cuda-oxide GDN decode (f32, no-TC)");
-    println!("[oxide-attn-gdn] GPU: RTX 5090 sm_120, correctness-only run");
+    if bench_mode {
+        println!("[oxide-attn-gdn] GPU: RTX 5090 sm_120, BENCH MODE (Wave 22.6)");
+    } else {
+        println!("[oxide-attn-gdn] GPU: RTX 5090 sm_120, correctness-only run");
+    }
 
+    // Correctness always runs (cheap, both shapes).
     run_shape(&SHAPE_CORRECTNESS, &ctx, &stream, &module, &mut csv);
     run_shape(&SHAPE_QWEN3_NEXT_DECODE, &ctx, &stream, &module, &mut csv);
+
+    if bench_mode {
+        // Wave 22.6: 50 timed iters with cudaEvent on qwen3_next_decode.
+        run_bench(
+            &SHAPE_QWEN3_NEXT_DECODE,
+            &ctx,
+            &stream,
+            &module,
+            &mut csv,
+            50, // iters
+            5,  // warmup
+        );
+    }
 
     csv.flush().unwrap();
     println!("[oxide-attn-gdn] results.csv written");

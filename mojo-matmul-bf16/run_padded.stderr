@@ -1,0 +1,8 @@
+/home/codeseys/cuda-exploration/mojo-matmul-bf16/matmul_bf16_padded.mojo:114:5: warning: 'alias' is deprecated; use 'comptime'
+    alias A_view_layout = Layout(IntTuple(BM, BK), IntTuple(BK_PAD, 1))
+    ^~~~~
+    comptime
+/home/codeseys/cuda-exploration/mojo-matmul-bf16/matmul_bf16_padded.mojo:115:5: warning: 'alias' is deprecated; use 'comptime'
+    alias B_view_layout = Layout(IntTuple(BK, BN), IntTuple(BN_PAD, 1))
+    ^~~~~
+    comptime

@@ -130,6 +130,12 @@ Vision: ship a comprehensive, third-party-citeable evaluation of NVlabs/cuda-oxi
   - W22.6: oxide-attn-gdn timed bench harness (~50 LOC, mirror oxide-attn-gqa pattern) — Wave 17 W1d follow-up
   - W22.7: cutile-attn-kda larger-shape sweep (B=4 H=64 d_k=d_v=256) to saturate GPU and claim 8× state-traffic advantage — Wave 17 W1e follow-up
   - W22.8: cuda-attn-gdn TMA-vs-LDG.E.128 investigation — why does cuTile's UTMALDG beat thread-vectorized LDG.E.128 on Blackwell? — Wave 17 W1c hardware-level follow-up
+- ✅ **Wave 22.2 SHIPPED 2026-05-21**: mojo-matmul-f16 (f16 lane) at **79.44 TF median @ 4096³**, essentially identical to Wave 21 bf16 (79.26 TF). Confirms Mojo's m16n8k16 path is dtype-agnostic on consumer Blackwell. See [`results/wave22-partial-summary.md`](results/wave22-partial-summary.md).
+- ✅ **Wave 22.3 SHIPPED 2026-05-21 (correctness only)**: padded-smem variant of mojo-matmul-bf16. Critical finding: Mojo's `TensorCore.load_a/load_b` does NOT emit `ldmatrix`, only scalar `LDS.U16`. Wave 21 reviewer R2's "padded smem unlocks ldmatrix.x4" hypothesis cannot apply. Variant parked as counter-example.
+- ✅ **Wave 22.6 SHIPPED 2026-05-21 (author only)**: oxide-attn-gdn `--bench` mode added with cudaEvent timing. Bench numbers TBD (orchestrator runs in next loop).
+- ✅ **Wave 22.8 SHIPPED 2026-05-21**: Wave 17 W1c hypothesis REJECTED. Both nvcc and cuTile GDN kernels have ZERO TMA. cuTile's win is Blackwell async-barrier producer/consumer warp-specialization with 100KB smem + REG=255. nvcc weakness is TPB=16 (half-a-warp) launch geometry. Hardware-API gap, not compiler-quality. New W22.9 (`cuda::pipeline`) and W22.10 (`cuTensorMapEncodeTiled`) candidates added. See [`docs/research/wave17-w1c-tma-vs-ldg128-investigation.md`](docs/research/wave17-w1c-tma-vs-ldg128-investigation.md).
+- 📋 **Wave 22.9 candidate**: `cuda-attn-gdn-async/` — port to `cuda::pipeline` for producer/consumer split, target ~520-560 GB/s (cuTile parity).
+- 📋 **Wave 22.10 candidate**: `cuda-attn-gdn-tma/` — use `cuTensorMapEncodeTiled` + `cp.async.bulk.tensor` for explicit TMA. Novel data point.
 
 ## Wave plan (legacy, original Wave 1-3 outline)
 
