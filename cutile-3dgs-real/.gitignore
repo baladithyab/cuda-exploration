@@ -1,0 +1,9 @@
+# cutile-3dgs-real artifacts
+*.ppm
+*.f32
+__pycache__/
+*.pyc
+*.cubin
+*.sass
+run.log
+results.csv

@@ -18,6 +18,8 @@ cublas-attn-gqa/attn_gqa
 cuda-attn-mla/attn_mla
 cuda-attn-gdn/attn_gdn
 cuda-attn-gdn/bench
+cuda-attn-gdn-async/attn_gdn_async
+cuda-attn-gdn-async/bench
 cublas-attn-mla/attn_mla
 cublas-attn-mla/bench
 

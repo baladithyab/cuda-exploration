@@ -80,6 +80,27 @@ SHAPE_CORRECTNESS = KDAShape(
 SHAPE_KIMI_LINEAR_DECODE = KDAShape(
     name="kimi_linear_decode", batch=1, n_heads=32, d_k=128, d_v=128,
 )
+# Wave 22.7 — larger-shape sweep to test the GPU-saturation hypothesis.
+# kimi_linear_decode at (B=1,H=32,d_k=d_v=128) launches only 32 blocks (≤ 32
+# of 170 SMs on RTX 5090) — suspected launch-overhead-bound.  These shapes
+# raise n_blocks to demonstrate the '8x state-traffic reduction vs GDN'
+# claim from the research doc actually translates to perf at saturation.
+SHAPE_QWEN3_NEXT_GDN_PARITY = KDAShape(
+    # SAME as cutile-attn-gdn's qwen3_next_decode — apples-to-apples comparison
+    # against GDN's 610 GB/s headline at this exact shape.
+    name="qwen3_next_gdn_parity", batch=1, n_heads=16, d_k=256, d_v=256,
+)
+SHAPE_LARGE = KDAShape(
+    # B=4 H=64 d_k=d_v=256 — n_blocks = B·H · (d_v/BV) = 256 · 4 = 1024,
+    # well above 170-SM count → saturation regime.
+    name="large", batch=4, n_heads=64, d_k=256, d_v=256,
+)
+SHAPE_REGISTRY: dict[str, KDAShape] = {
+    SHAPE_CORRECTNESS.name: SHAPE_CORRECTNESS,
+    SHAPE_KIMI_LINEAR_DECODE.name: SHAPE_KIMI_LINEAR_DECODE,
+    SHAPE_QWEN3_NEXT_GDN_PARITY.name: SHAPE_QWEN3_NEXT_GDN_PARITY,
+    SHAPE_LARGE.name: SHAPE_LARGE,
+}
 
 
 # ─────────────────────────────────────────────────────────────────────────────

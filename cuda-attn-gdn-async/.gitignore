@@ -1,0 +1,8 @@
+attn_gdn_async
+bench
+attn_gdn_async.sass
+results.csv
+run.log
+build.log
+*.o
+*.cubin
