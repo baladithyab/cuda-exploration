@@ -1,0 +1,5 @@
+run.log
+*.ptx
+*.cubin
+__pycache__/
+.mojo_cache/

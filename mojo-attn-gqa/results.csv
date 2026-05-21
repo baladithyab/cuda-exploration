@@ -1,0 +1,4 @@
+impl,kernel,batch,seq,n_q,n_kv,d_head,iter,gpu_ms,tflops
+mojo-attn-gqa,3kernel_handmma_bf16,1,2048,32,8,128,best,2.37184,28.973066
+mojo-attn-gqa,3kernel_handmma_bf16,1,2048,32,8,128,median,2.679104,25.650171
+mojo-attn-gqa,3kernel_handmma_bf16,1,2048,32,8,128,worst,3.014944,22.793413

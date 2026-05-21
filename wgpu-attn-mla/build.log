@@ -1,0 +1,11 @@
+   Compiling naga v22.1.0
+   Compiling ash v0.38.0+1.3.281
+   Compiling num-bigint v0.4.6
+   Compiling bytemuck v1.25.0
+   Compiling py_literal v0.4.0
+   Compiling npyz v0.8.4
+   Compiling wgpu-hal v22.0.0
+   Compiling wgpu-core v22.1.0
+   Compiling wgpu v22.1.0
+   Compiling wgpu-attn-mla v0.1.0 (/home/codeseys/cuda-exploration/wgpu-attn-mla)
+    Finished `release` profile [optimized] target(s) in 19.39s

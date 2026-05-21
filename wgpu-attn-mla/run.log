@@ -1,0 +1,58 @@
+    Finished `release` profile [optimized] target(s) in 0.04s
+     Running `target/release/wgpu-attn-mla`
+libEGL warning: failed to get driver name for fd -1
+
+libEGL warning: MESA-LOADER: failed to retrieve device information
+
+libEGL warning: failed to get driver name for fd -1
+
+MESA: error: ZINK: failed to choose pdev
+libEGL warning: egl: failed to create dri2 screen
+[wgpu] candidate: llvmpipe (LLVM 20.1.2, 256 bits)                   backend=Vulkan  type=Cpu
+[wgpu] candidate: llvmpipe (LLVM 20.1.2, 256 bits)                   backend=Gl  type=Cpu
+
+[wgpu] using: llvmpipe (LLVM 20.1.2, 256 bits) (Vulkan, type=Cpu)
+[wgpu] !! WARNING: only CPU adapters enumerated. WSL2 dead-end.
+[wgpu] !! Kernel runs via llvmpipe on CPU — TFLOPS below is NOT GPU perf.
+[wgpu] !! Correctness IS meaningful; timing is not.
+[wgpu] adapter caps: max_storage_buffer_binding_size = 128 MiB, max_buffer_size = 2047 MiB
+[wgpu] timestamp_query feature: true
+
+[wgpu] inputs dir = "/home/codeseys/cuda-exploration/analysis/wave15-attention-architecture/inputs"
+
+=== SHAPE: correctness_mla ===
+[correctness_mla] B=1 n_h=4 S=128 qk=96 d_v=64
+[correctness_mla] loaded Q+K (0.2 MiB ea)  V (0.1 MiB)  expected (0.1 MiB)
+[correctness_mla] flops/iter = 0.02 GFLOP   dispatches: qkt=(8x8x4) sm=(512x1x1) pv=(4x8x4)
+[correctness_mla] warmup 0:  total=54.837 ms  qkt=12.046 sm=33.939 pv=8.531  (0.0004 TFLOPS)  cpu_wall=56.06 ms
+[correctness_mla] iter 1:  total=5.045 ms  qkt=1.507 sm=1.627 pv=1.254  (0.0042 TFLOPS)  cpu_wall=5.42 ms
+[correctness_mla] iter 2:  total=4.556 ms  qkt=1.466 sm=1.647 pv=1.107  (0.0046 TFLOPS)  cpu_wall=4.99 ms
+[correctness_mla] BEST   total=4.556 ms  0.0046 TFLOPS
+[correctness_mla] MEDIAN total=5.045 ms  0.0042 TFLOPS
+[correctness_mla] per-stage median:  qkt=1.507 ms (31.4%)  sm=1.647 ms (34.3%)  pv=1.254 ms (26.1%)
+[correctness_mla] correctness: max_abs_err=1.192e-7  rel_err=3.922e-7  atol=1e-2  OK
+
+=== SHAPE: medium_mla (perf-only, synthetic inputs) ===
+[medium_mla] note: deepseek_v3 needs 2 GiB scores (n_h=128, S=2048).
+[medium_mla]       medium_mla is a scaled-down perf sanity (n_h=4 S=512).
+[medium_mla] B=1 n_h=4 S=512 qk=96 d_v=64
+[medium_mla] flops/iter = 0.34 GFLOP   scores buf = 4.0 MiB
+[medium_mla] warmup 0:  total=50.143 ms  qkt=25.707 sm=6.712 pv=17.356  (0.0067 TFLOPS)  cpu_wall=54.86 ms
+[medium_mla] iter 1:  total=55.728 ms  qkt=28.412 sm=9.603 pv=17.165  (0.0060 TFLOPS)  cpu_wall=56.11 ms
+[medium_mla] iter 2:  total=44.338 ms  qkt=20.562 sm=6.925 pv=16.419  (0.0076 TFLOPS)  cpu_wall=44.65 ms
+[medium_mla] iter 3:  total=41.202 ms  qkt=20.449 sm=6.639 pv=13.809  (0.0081 TFLOPS)  cpu_wall=42.62 ms
+[medium_mla] BEST   total=41.202 ms  0.0081 TFLOPS
+[medium_mla] MEDIAN total=44.338 ms  0.0076 TFLOPS
+[medium_mla] per-stage median:  qkt=20.562 ms (43.7%)  sm=6.925 ms (14.7%)  pv=16.419 ms (34.9%)
+
+=== SHAPE: deepseek_v3 (canonical bench) ===
+[deepseek_v3] SKIP: scores buffer 2048 MiB exceeds max_storage_buffer_binding_size 128 MiB
+[deepseek_v3] scores = B·n_h·S² · 4B = 1·128·2048²·4 = 2 GiB.
+[deepseek_v3] llvmpipe caps at 128 MiB. To run, need a real GPU adapter or
+[deepseek_v3] a fused/FlashAttention-style scores-tile streaming rewrite.
+
+[wgpu] Reminder: these times are llvmpipe on CPU. NOT GPU perf.
+[wgpu] Wave C1.6 baselines for cross-API context (real GPU, RTX 5090):
+[wgpu]   cuda-attn-mla:  24.17 TF (HMMA)
+[wgpu]   oxide-attn-mla: 24.70 TF (FFMA, no TC) -- closest peer
+[wgpu] WGSL has no tensor cores; expected real-GPU perf class is FFMA.

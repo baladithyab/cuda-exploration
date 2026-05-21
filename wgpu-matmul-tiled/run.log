@@ -1,0 +1,31 @@
+libEGL warning: failed to get driver name for fd -1
+
+libEGL warning: MESA-LOADER: failed to retrieve device information
+
+libEGL warning: failed to get driver name for fd -1
+
+MESA: error: ZINK: failed to choose pdev
+libEGL warning: egl: failed to create dri2 screen
+[wgpu-tiled] candidate: llvmpipe (LLVM 20.1.2, 256 bits) (Vulkan, type=Cpu)
+[wgpu-tiled] candidate: llvmpipe (LLVM 20.1.2, 256 bits) (Gl, type=Cpu)
+[wgpu-tiled] using: llvmpipe (LLVM 20.1.2, 256 bits) (Vulkan, type=Cpu)
+[wgpu-tiled] !! WARNING: only CPU adapter available (WSL Vulkan limitation). Numbers below are CPU-side, not real GPU.
+[wgpu-tiled] max_storage_buffer_binding_size = 128 MiB
+[wgpu-tiled] timestamp_query feature: true
+[wgpu-tiled] matmul 4096x4096 f32 (BM=BN=BK=16), 137.44 GFLOP/iter
+[wgpu-tiled] timed iters: 5 (override via WGPU_TILED_ITERS, default 50)
+[wgpu-tiled] warmup 0: gpu_ts=28805.51 ms (0.005 TFLOPS)  cpu_wall=28942.04 ms
+[wgpu-tiled] iter 0: gpu_ts=26070.43 ms (0.005 TFLOPS)  cpu_wall=26070.75 ms
+[wgpu-tiled] iter 1: gpu_ts=24223.77 ms (0.006 TFLOPS)  cpu_wall=24224.08 ms
+[wgpu-tiled] iter 2: gpu_ts=23888.18 ms (0.006 TFLOPS)  cpu_wall=23888.51 ms
+[wgpu-tiled] iter 3: gpu_ts=24365.77 ms (0.006 TFLOPS)  cpu_wall=24366.03 ms
+[wgpu-tiled] iter 4: gpu_ts=24163.32 ms (0.006 TFLOPS)  cpu_wall=24163.56 ms
+[wgpu-tiled] check (0,0): got=6.1420 want=6.1420 abs=1.621e-5 rel=2.640e-6 OK
+[wgpu-tiled] check (1,1): got=6.1439 want=6.1439 abs=1.574e-5 rel=2.561e-6 OK
+[wgpu-tiled] check (2048,2048): got=6.1455 want=6.1455 abs=1.526e-5 rel=2.483e-6 OK
+[wgpu-tiled] check (4095,0): got=6.1420 want=6.1420 abs=1.621e-5 rel=2.640e-6 OK
+[wgpu-tiled] check (4095,4095): got=6.1392 want=6.1392 abs=1.478e-5 rel=2.408e-6 OK
+[wgpu-tiled] correctness: 5/5 OK  max_abs_err=1.621e-5  max_rel_err=2.640e-6
+
+[wgpu-tiled] BEST   23888.18 ms  0.006 TFLOPS
+[wgpu-tiled] MEDIAN 24223.77 ms  0.006 TFLOPS

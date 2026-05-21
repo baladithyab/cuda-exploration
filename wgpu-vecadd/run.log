@@ -1,0 +1,64 @@
+libEGL warning: failed to get driver name for fd -1
+
+libEGL warning: MESA-LOADER: failed to retrieve device information
+
+libEGL warning: failed to get driver name for fd -1
+
+MESA: error: ZINK: failed to choose pdev
+libEGL warning: egl: failed to create dri2 screen
+[wgpu] candidate: llvmpipe (LLVM 20.1.2, 256 bits) (Vulkan, type=Cpu)
+[wgpu] candidate: llvmpipe (LLVM 20.1.2, 256 bits) (Gl, type=Cpu)
+[wgpu] using: llvmpipe (LLVM 20.1.2, 256 bits) (Vulkan, type=Cpu)
+[wgpu] !! WARNING: only CPU adapter available (WSL Vulkan limitation). Numbers below are CPU-side, not real GPU.
+[wgpu] max_storage_buffer_binding_size = 128 MiB
+[wgpu] max_buffer_size               = 2047 MiB
+[wgpu] requested max_storage_buffer_binding_size = 128 MiB (capped by adapter at 128 MiB)
+[wgpu] timestamp_query feature: true
+[wgpu] effective max_storage_buffer_binding_size = 128 MiB, max_buffer_size = 1024 MiB
+
+[wgpu] N=1048576 vecadd f32, traffic=0.013 GB/iter, per-buf=4 MiB
+[wgpu] N=1048576 dispatch grid = (4096, 1, 1) total_wg=4096
+[wgpu] N=1048576 warmup 0: gpu=8.649 ms cpu_wall=18.113 ms
+[wgpu] N=1048576 iter=0: gpu_ts=0.955 ms (13.18 GB/s)  cpu_wall=1.560 ms
+[wgpu] N=1048576 iter=1: gpu_ts=1.049 ms (12.00 GB/s)  cpu_wall=1.332 ms
+[wgpu] N=1048576 iter=2: gpu_ts=0.856 ms (14.70 GB/s)  cpu_wall=1.143 ms
+[wgpu] N=1048576 iter=3: gpu_ts=0.929 ms (13.54 GB/s)  cpu_wall=1.144 ms
+[wgpu] N=1048576 iter=4: gpu_ts=0.918 ms (13.71 GB/s)  cpu_wall=1.234 ms
+[wgpu] N=1048576 iter=5: gpu_ts=0.867 ms (14.52 GB/s)  cpu_wall=1.131 ms
+[wgpu] N=1048576 iter=6: gpu_ts=0.915 ms (13.75 GB/s)  cpu_wall=1.165 ms
+[wgpu] N=1048576 iter=7: gpu_ts=0.863 ms (14.57 GB/s)  cpu_wall=1.172 ms
+[wgpu] N=1048576 iter=8: gpu_ts=0.854 ms (14.74 GB/s)  cpu_wall=1.097 ms
+[wgpu] N=1048576 iter=9: gpu_ts=0.751 ms (16.75 GB/s)  cpu_wall=1.044 ms
+[wgpu] N=1048576 check idx=0 got=0 want=0 abs_err=0
+[wgpu] N=1048576 check idx=524288 got=0.08 want=0.08 abs_err=0
+[wgpu] N=1048576 check idx=1048575 got=0.03 want=0.03 abs_err=0
+[wgpu] N=1048576 correctness: probes 3/3 exact, full-vector max_abs_err = 0
+[wgpu] N=1048576 BEST=0.751 ms (16.75 GB/s)  MEDIAN=0.891 ms (14.12 GB/s)
+
+[wgpu] N=16777216 vecadd f32, traffic=0.201 GB/iter, per-buf=64 MiB
+[wgpu] N=16777216 dispatch grid = (65535, 2, 1) total_wg=65536
+[wgpu] N=16777216 warmup 0: gpu=15.031 ms cpu_wall=144.142 ms
+[wgpu] N=16777216 iter=0: gpu_ts=11.662 ms (17.26 GB/s)  cpu_wall=11.957 ms
+[wgpu] N=16777216 iter=1: gpu_ts=12.898 ms (15.61 GB/s)  cpu_wall=13.166 ms
+[wgpu] N=16777216 iter=2: gpu_ts=14.236 ms (14.14 GB/s)  cpu_wall=14.581 ms
+[wgpu] N=16777216 iter=3: gpu_ts=14.697 ms (13.70 GB/s)  cpu_wall=15.060 ms
+[wgpu] N=16777216 iter=4: gpu_ts=16.043 ms (12.55 GB/s)  cpu_wall=16.337 ms
+[wgpu] N=16777216 iter=5: gpu_ts=15.178 ms (13.26 GB/s)  cpu_wall=15.428 ms
+[wgpu] N=16777216 iter=6: gpu_ts=15.312 ms (13.15 GB/s)  cpu_wall=15.694 ms
+[wgpu] N=16777216 iter=7: gpu_ts=15.088 ms (13.34 GB/s)  cpu_wall=15.395 ms
+[wgpu] N=16777216 iter=8: gpu_ts=14.431 ms (13.95 GB/s)  cpu_wall=14.745 ms
+[wgpu] N=16777216 iter=9: gpu_ts=14.905 ms (13.51 GB/s)  cpu_wall=15.229 ms
+[wgpu] N=16777216 check idx=0 got=0 want=0 abs_err=0
+[wgpu] N=16777216 check idx=8388608 got=0.12 want=0.12 abs_err=0
+[wgpu] N=16777216 check idx=16777215 got=0.04 want=0.04 abs_err=0
+[wgpu] N=16777216 correctness: probes 3/3 exact, full-vector max_abs_err = 0
+[wgpu] N=16777216 BEST=11.662 ms (17.26 GB/s)  MEDIAN=14.801 ms (13.60 GB/s)
+[wgpu] N=67108864 (256 MiB/buffer) skipped: exceeds adapter storage-buffer limit (128 MiB)
+[wgpu] N=268435456 (1024 MiB/buffer) skipped: exceeds adapter storage-buffer limit (128 MiB)
+
+================== SUMMARY ==================
+N                 best_ms       med_ms   best_GBs    med_GBs    max_abs_err
+----------------------------------------------------------------------------
+1048576            0.7512       0.8911      16.75      14.12              0
+16777216          11.6623      14.8011      17.26      13.60              0
+=============================================

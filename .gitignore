@@ -69,3 +69,12 @@ cuda-attn-mla-tma/attn_mla_tma
 mojo-3dgs/cam_A.bin
 mojo-3dgs/*.ppm
 mojo-3dgs/*.sass
+
+# Wave C1 Rosetta cells
+wgpu-vecadd/target/
+wgpu-reduction/target/
+wgpu-matmul-tiled/target/
+wgpu-attn-mla/target/
+mojo-matmul-tiled/__pycache__/
+mojo-attn-gqa/__pycache__/
+mojo-attn-gqa/attn_gqa
