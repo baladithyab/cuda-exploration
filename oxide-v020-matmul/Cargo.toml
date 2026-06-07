@@ -1,0 +1,11 @@
+[package]
+name = "oxide-v020-matmul"
+version = "0.1.0"
+edition = "2024"
+
+[workspace]
+
+[dependencies]
+cuda-device = { git = "https://github.com/NVlabs/cuda-oxide.git", tag = "v0.2.0" }
+cuda-host = { git = "https://github.com/NVlabs/cuda-oxide.git", tag = "v0.2.0" }
+cuda-core = { git = "https://github.com/NVlabs/cuda-oxide.git", tag = "v0.2.0" }
