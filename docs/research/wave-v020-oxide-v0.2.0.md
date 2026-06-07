@@ -48,10 +48,33 @@ large (64MB) matmul operands. `UNINIT` is zero-init only; host must `module.set_
 (verified round-trip + re-set-between-launches). `#[readonly]` is a **device-FFI-function** NVVM attr
 (LLVM `readonly` fn attribute for LTOIR linking), NOT a slice/param hint — wrong tool for finding (b).
 
+## Wall-clock perf: v0.1.0 vs v0.2.0 — no meaningful difference (measured)
+
+Backend-isolation A/B: same `oxide-matmul` source (old library lock, so ONLY the codegen backend `.so`
+varies), `CUDA_OXIDE_BACKEND` env override swaps OLD=`2a03dfd` (v0.1.0-era) vs NEW=`faea3959` (v0.2.0),
+`rm -rf target *.ptx *.ll` between runs. RTX 5090 idle ~44–45°C, N∈{1024,2048,4096}, safe/unchecked/fmuladd.
+
+- **best latency** (noise-resistant): median **−0.31%**, range [−4.5%, +1.1%] → dead even; NEW edges ahead
+  at N=4096 (19.4–19.7 ms vs OLD 20.2–20.4 ms).
+- **median throughput**: median **−2.3%**, range [−11.2%, +0.1%] → dominated by run-to-run variance (the
+  −11.2% `safe@2048` cell is a jitter artifact; WSL2 CV is 5–15% with no clock-lock).
+- SASS instruction mix identical. **Verdict: v0.2.0 changed what's expressible/ergonomic, not how fast
+  emitted code runs.** Discipline: report BEST latency, not median, on noisy WSL2 GPU runs.
+
+## Self-contained binaries: `.oxart` embedding (no sidecar `.ptx` to ship)
+
+`#[cuda_module]` + `oxide-artifacts` bake the PTX into an ELF `.oxart` section (magic `OXIDEART`, v1,
+per-target Ptx/NvvmIr/Ltoir/Cubin payloads). `kernels::load(&ctx)` reads from that section at runtime —
+no filename lookup, no loose `.ptx`. Zero opt-in (no extra dep / `build.rs`; `cargo oxide` injects it).
+**Proven:** copied `oxide-v020-verify` binary alone to an empty `/tmp` dir (no `.ptx`/`.ll`) → ran correctly.
+This obsoletes the v0.1.0 `NoArtifact` filename gotcha for `#[cuda_module]` cells. NB: the ~280 MB codegen
+backend `.so` is a BUILD-TIME tool (the rustc→PTX compiler), never shipped — it can't and needn't be
+eliminated; only the runtime `.ptx` is now self-contained.
+
 ## Bottom line
-- v0.1.0 compute-bound perf characterization **unchanged** by v0.2.0.
-- v0.2.0 value = ergonomics + new capabilities (`#[constant]`, typed `#[cuda_module]` launch,
-  `gpu_printf!`, `launch_bounds`, math fns) + breaking API shape changes.
+- v0.1.0 compute-bound perf characterization **unchanged** by v0.2.0; wall-clock A/B confirms no perf delta.
+- v0.2.0 value = ergonomics + new capabilities (`#[constant]`, typed `#[cuda_module]` launch + `.oxart`
+  self-contained binaries, `gpu_printf!`, `launch_bounds`, math fns) + breaking API shape changes.
 - Closing finding (b) still needs an upstream codegen patch (emit `invariant.load`/non-temporal metadata
   or `ld.global.nc` for immutable `&[T]`). `#[constant]`/`#[readonly]` are not it.
 

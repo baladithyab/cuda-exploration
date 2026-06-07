@@ -1,0 +1,171 @@
+=========================================
+RUSTC-CODEGEN-CUDA: oxide-matmul
+=========================================
+
+This is the proper cargo workflow:
+  RUSTFLAGS="-Z codegen-backend=..." cargo run
+
+Building and running oxide-matmul...
+
+   Compiling proc-macro2 v1.0.106
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.45
+   Compiling glob v0.3.3
+   Compiling libc v0.2.186
+   Compiling prettyplease v0.2.37
+   Compiling memchr v2.8.0
+   Compiling cfg-if v1.0.4
+   Compiling regex-syntax v0.8.10
+   Compiling minimal-lexical v0.2.1
+   Compiling libloading v0.8.9
+   Compiling either v1.15.0
+   Compiling bindgen v0.71.1
+   Compiling nom v7.1.3
+   Compiling itertools v0.13.0
+   Compiling shlex v1.3.0
+   Compiling clang-sys v1.8.1
+   Compiling bitflags v2.11.1
+   Compiling syn v2.0.117
+   Compiling regex-automata v0.4.14
+   Compiling rustc-hash v2.1.2
+   Compiling log v0.4.29
+   Compiling cexpr v0.6.0
+   Compiling thiserror v2.0.18
+   Compiling anyhow v1.0.102
+   Compiling zerocopy v0.8.48
+   Compiling regex v1.12.3
+   Compiling reserved-oxide-symbols v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#6de05094)
+   Compiling thiserror-impl v2.0.18
+   Compiling zerocopy-derive v0.8.48
+   Compiling cuda-macros v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#6de05094)
+   Compiling cuda-bindings v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#6de05094)
+   Compiling libnvvm-sys v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#6de05094)
+   Compiling nvjitlink-sys v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#6de05094)
+   Compiling cuda-core v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#6de05094)
+   Compiling cuda-device v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#6de05094)
+   Compiling half v2.7.1
+   Compiling cuda-host v0.1.0 (https://github.com/NVlabs/cuda-oxide.git#6de05094)
+   Compiling oxide-matmul v0.1.0 (/home/codeseys/cuda-exploration/oxide-matmul)
+    Finished `release` profile [optimized] target(s) in 21.81s
+     Running `target/release/oxide-matmul`
+[oxide] matmul size-sweep [1024, 2048, 4096] f32, 1 warmup + 10 timed iters per (kernel, N)
+[oxide] timing: gpu_ms via cuEventRecord (ADR-0001), cpu_wall_ms via Instant
+
+---- N = 1024 ----
+[oxide-safe] N=1024 iter=0 gpu_ms=0.316 cpu_wall_ms=0.559 tflops=6.801
+[oxide-safe] N=1024 iter=1 gpu_ms=0.305 cpu_wall_ms=0.512 tflops=7.044
+[oxide-safe] N=1024 iter=2 gpu_ms=0.310 cpu_wall_ms=0.351 tflops=6.933
+[oxide-safe] N=1024 iter=3 gpu_ms=0.303 cpu_wall_ms=0.481 tflops=7.083
+[oxide-safe] N=1024 iter=4 gpu_ms=0.310 cpu_wall_ms=0.345 tflops=6.921
+[oxide-safe] N=1024 iter=5 gpu_ms=0.310 cpu_wall_ms=0.351 tflops=6.921
+[oxide-safe] N=1024 iter=6 gpu_ms=0.309 cpu_wall_ms=0.360 tflops=6.947
+[oxide-safe] N=1024 iter=7 gpu_ms=0.407 cpu_wall_ms=0.447 tflops=5.273
+[oxide-safe] N=1024 iter=8 gpu_ms=0.312 cpu_wall_ms=0.354 tflops=6.889
+[oxide-safe] N=1024 iter=9 gpu_ms=0.310 cpu_wall_ms=0.347 tflops=6.921
+[oxide-safe] N=1024 correctness 3/3  best=0.303ms median=0.310ms  (6.921 TFLOPS median)
+[oxide-unchecked] N=1024 iter=0 gpu_ms=0.309 cpu_wall_ms=0.346 tflops=6.953
+[oxide-unchecked] N=1024 iter=1 gpu_ms=0.310 cpu_wall_ms=0.341 tflops=6.928
+[oxide-unchecked] N=1024 iter=2 gpu_ms=0.309 cpu_wall_ms=0.340 tflops=6.949
+[oxide-unchecked] N=1024 iter=3 gpu_ms=0.310 cpu_wall_ms=0.340 tflops=6.928
+[oxide-unchecked] N=1024 iter=4 gpu_ms=0.310 cpu_wall_ms=0.341 tflops=6.935
+[oxide-unchecked] N=1024 iter=5 gpu_ms=0.309 cpu_wall_ms=0.343 tflops=6.949
+[oxide-unchecked] N=1024 iter=6 gpu_ms=0.307 cpu_wall_ms=0.343 tflops=6.985
+[oxide-unchecked] N=1024 iter=7 gpu_ms=0.381 cpu_wall_ms=0.429 tflops=5.630
+[oxide-unchecked] N=1024 iter=8 gpu_ms=0.310 cpu_wall_ms=0.545 tflops=6.932
+[oxide-unchecked] N=1024 iter=9 gpu_ms=0.310 cpu_wall_ms=0.344 tflops=6.928
+[oxide-unchecked] N=1024 correctness 3/3  best=0.307ms median=0.310ms  (6.932 TFLOPS median)
+[oxide-fmuladd] N=1024 iter=0 gpu_ms=0.308 cpu_wall_ms=0.376 tflops=6.982
+[oxide-fmuladd] N=1024 iter=1 gpu_ms=0.308 cpu_wall_ms=0.349 tflops=6.978
+[oxide-fmuladd] N=1024 iter=2 gpu_ms=0.322 cpu_wall_ms=0.895 tflops=6.679
+[oxide-fmuladd] N=1024 iter=3 gpu_ms=0.322 cpu_wall_ms=0.986 tflops=6.677
+[oxide-fmuladd] N=1024 iter=4 gpu_ms=0.303 cpu_wall_ms=0.462 tflops=7.083
+[oxide-fmuladd] N=1024 iter=5 gpu_ms=0.317 cpu_wall_ms=0.353 tflops=6.775
+[oxide-fmuladd] N=1024 iter=6 gpu_ms=0.311 cpu_wall_ms=0.345 tflops=6.907
+[oxide-fmuladd] N=1024 iter=7 gpu_ms=0.309 cpu_wall_ms=0.339 tflops=6.951
+[oxide-fmuladd] N=1024 iter=8 gpu_ms=0.318 cpu_wall_ms=0.352 tflops=6.756
+[oxide-fmuladd] N=1024 iter=9 gpu_ms=0.309 cpu_wall_ms=0.337 tflops=6.959
+[oxide-fmuladd] N=1024 correctness 3/3  best=0.303ms median=0.311ms  (6.907 TFLOPS median)
+
+---- N = 2048 ----
+[oxide-safe] N=2048 iter=0 gpu_ms=2.572 cpu_wall_ms=2.625 tflops=6.680
+[oxide-safe] N=2048 iter=1 gpu_ms=2.615 cpu_wall_ms=2.687 tflops=6.570
+[oxide-safe] N=2048 iter=2 gpu_ms=3.163 cpu_wall_ms=3.226 tflops=5.431
+[oxide-safe] N=2048 iter=3 gpu_ms=2.348 cpu_wall_ms=2.422 tflops=7.316
+[oxide-safe] N=2048 iter=4 gpu_ms=2.267 cpu_wall_ms=2.433 tflops=7.578
+[oxide-safe] N=2048 iter=5 gpu_ms=3.006 cpu_wall_ms=3.069 tflops=5.715
+[oxide-safe] N=2048 iter=6 gpu_ms=2.599 cpu_wall_ms=2.886 tflops=6.610
+[oxide-safe] N=2048 iter=7 gpu_ms=2.299 cpu_wall_ms=2.362 tflops=7.473
+[oxide-safe] N=2048 iter=8 gpu_ms=3.266 cpu_wall_ms=3.335 tflops=5.261
+[oxide-safe] N=2048 iter=9 gpu_ms=2.320 cpu_wall_ms=2.441 tflops=7.404
+[oxide-safe] N=2048 correctness 3/3  best=2.267ms median=2.599ms  (6.610 TFLOPS median)
+[oxide-unchecked] N=2048 iter=0 gpu_ms=3.468 cpu_wall_ms=3.556 tflops=4.954
+[oxide-unchecked] N=2048 iter=1 gpu_ms=2.305 cpu_wall_ms=2.361 tflops=7.452
+[oxide-unchecked] N=2048 iter=2 gpu_ms=2.589 cpu_wall_ms=2.654 tflops=6.635
+[oxide-unchecked] N=2048 iter=3 gpu_ms=2.292 cpu_wall_ms=2.351 tflops=7.495
+[oxide-unchecked] N=2048 iter=4 gpu_ms=2.564 cpu_wall_ms=2.633 tflops=6.701
+[oxide-unchecked] N=2048 iter=5 gpu_ms=2.297 cpu_wall_ms=2.372 tflops=7.478
+[oxide-unchecked] N=2048 iter=6 gpu_ms=2.271 cpu_wall_ms=2.356 tflops=7.565
+[oxide-unchecked] N=2048 iter=7 gpu_ms=2.560 cpu_wall_ms=2.606 tflops=6.711
+[oxide-unchecked] N=2048 iter=8 gpu_ms=2.275 cpu_wall_ms=2.343 tflops=7.551
+[oxide-unchecked] N=2048 iter=9 gpu_ms=2.559 cpu_wall_ms=2.614 tflops=6.714
+[oxide-unchecked] N=2048 correctness 3/3  best=2.271ms median=2.559ms  (6.714 TFLOPS median)
+[oxide-fmuladd] N=2048 iter=0 gpu_ms=2.715 cpu_wall_ms=2.801 tflops=6.327
+[oxide-fmuladd] N=2048 iter=1 gpu_ms=2.298 cpu_wall_ms=2.344 tflops=7.474
+[oxide-fmuladd] N=2048 iter=2 gpu_ms=2.549 cpu_wall_ms=2.595 tflops=6.739
+[oxide-fmuladd] N=2048 iter=3 gpu_ms=2.568 cpu_wall_ms=2.636 tflops=6.690
+[oxide-fmuladd] N=2048 iter=4 gpu_ms=2.297 cpu_wall_ms=2.358 tflops=7.479
+[oxide-fmuladd] N=2048 iter=5 gpu_ms=3.980 cpu_wall_ms=4.064 tflops=4.316
+[oxide-fmuladd] N=2048 iter=6 gpu_ms=2.891 cpu_wall_ms=2.970 tflops=5.944
+[oxide-fmuladd] N=2048 iter=7 gpu_ms=2.578 cpu_wall_ms=2.654 tflops=6.664
+[oxide-fmuladd] N=2048 iter=8 gpu_ms=3.192 cpu_wall_ms=3.262 tflops=5.382
+[oxide-fmuladd] N=2048 iter=9 gpu_ms=2.656 cpu_wall_ms=2.742 tflops=6.468
+[oxide-fmuladd] N=2048 correctness 3/3  best=2.297ms median=2.656ms  (6.468 TFLOPS median)
+
+---- N = 4096 ----
+[oxide-safe] N=4096 iter=0 gpu_ms=21.811 cpu_wall_ms=21.929 tflops=6.301
+[oxide-safe] N=4096 iter=1 gpu_ms=19.993 cpu_wall_ms=20.118 tflops=6.874
+[oxide-safe] N=4096 iter=2 gpu_ms=21.771 cpu_wall_ms=21.890 tflops=6.313
+[oxide-safe] N=4096 iter=3 gpu_ms=19.587 cpu_wall_ms=19.715 tflops=7.017
+[oxide-safe] N=4096 iter=4 gpu_ms=22.675 cpu_wall_ms=22.792 tflops=6.061
+[oxide-safe] N=4096 iter=5 gpu_ms=20.972 cpu_wall_ms=21.098 tflops=6.554
+[oxide-safe] N=4096 iter=6 gpu_ms=22.818 cpu_wall_ms=22.949 tflops=6.023
+[oxide-safe] N=4096 iter=7 gpu_ms=19.426 cpu_wall_ms=19.548 tflops=7.075
+[oxide-safe] N=4096 iter=8 gpu_ms=23.858 cpu_wall_ms=23.980 tflops=5.761
+[oxide-safe] N=4096 iter=9 gpu_ms=20.199 cpu_wall_ms=20.360 tflops=6.804
+[oxide-safe] N=4096 correctness 3/3  best=19.426ms median=21.771ms  (6.313 TFLOPS median)
+[oxide-unchecked] N=4096 iter=0 gpu_ms=20.471 cpu_wall_ms=20.687 tflops=6.714
+[oxide-unchecked] N=4096 iter=1 gpu_ms=21.800 cpu_wall_ms=21.916 tflops=6.305
+[oxide-unchecked] N=4096 iter=2 gpu_ms=20.193 cpu_wall_ms=20.324 tflops=6.806
+[oxide-unchecked] N=4096 iter=3 gpu_ms=21.975 cpu_wall_ms=22.103 tflops=6.254
+[oxide-unchecked] N=4096 iter=4 gpu_ms=19.745 cpu_wall_ms=19.874 tflops=6.961
+[oxide-unchecked] N=4096 iter=5 gpu_ms=22.977 cpu_wall_ms=23.098 tflops=5.982
+[oxide-unchecked] N=4096 iter=6 gpu_ms=21.365 cpu_wall_ms=21.485 tflops=6.433
+[oxide-unchecked] N=4096 iter=7 gpu_ms=22.223 cpu_wall_ms=22.398 tflops=6.185
+[oxide-unchecked] N=4096 iter=8 gpu_ms=19.866 cpu_wall_ms=19.985 tflops=6.918
+[oxide-unchecked] N=4096 iter=9 gpu_ms=22.674 cpu_wall_ms=22.798 tflops=6.061
+[oxide-unchecked] N=4096 correctness 3/3  best=19.745ms median=21.800ms  (6.305 TFLOPS median)
+[oxide-fmuladd] N=4096 iter=0 gpu_ms=21.998 cpu_wall_ms=22.116 tflops=6.248
+[oxide-fmuladd] N=4096 iter=1 gpu_ms=19.757 cpu_wall_ms=19.877 tflops=6.957
+[oxide-fmuladd] N=4096 iter=2 gpu_ms=22.507 cpu_wall_ms=22.630 tflops=6.107
+[oxide-fmuladd] N=4096 iter=3 gpu_ms=21.136 cpu_wall_ms=21.264 tflops=6.503
+[oxide-fmuladd] N=4096 iter=4 gpu_ms=22.380 cpu_wall_ms=22.499 tflops=6.141
+[oxide-fmuladd] N=4096 iter=5 gpu_ms=19.520 cpu_wall_ms=19.650 tflops=7.041
+[oxide-fmuladd] N=4096 iter=6 gpu_ms=22.049 cpu_wall_ms=22.193 tflops=6.233
+[oxide-fmuladd] N=4096 iter=7 gpu_ms=22.285 cpu_wall_ms=22.491 tflops=6.167
+[oxide-fmuladd] N=4096 iter=8 gpu_ms=22.854 cpu_wall_ms=23.508 tflops=6.014
+[oxide-fmuladd] N=4096 iter=9 gpu_ms=22.109 cpu_wall_ms=22.254 tflops=6.216
+[oxide-fmuladd] N=4096 correctness 3/3  best=19.520ms median=22.109ms  (6.216 TFLOPS median)
+
+================== SUMMARY ==================
+kernel            N  best_gpu_ms   med_gpu_ms    best_TF     med_TF
+--------------------------------------------------------------------
+safe           1024        0.303        0.310      7.083      6.921
+unchecked      1024        0.307        0.310      6.985      6.932
+fmuladd        1024        0.303        0.311      7.083      6.907
+safe           2048        2.267        2.599      7.578      6.610
+unchecked      2048        2.271        2.559      7.565      6.714
+fmuladd        2048        2.297        2.656      7.479      6.468
+safe           4096       19.426       21.771      7.075      6.313
+unchecked      4096       19.745       21.800      6.961      6.305
+fmuladd        4096       19.520       22.109      7.041      6.216
+=============================================
